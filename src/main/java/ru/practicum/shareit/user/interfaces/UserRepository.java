@@ -11,9 +11,11 @@ public interface UserRepository {
 
     Optional<User> readByEmail(String email);
 
-    User save(User user);
+    User create(User user);
 
-    void deleteById(long userId);
+    User update(User user);
+
+    void deleteUser(Long userId);
 
     Collection<User> readAll();
 

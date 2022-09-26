@@ -1,8 +1,10 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.exceptions.UserCrudException;
+import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.interfaces.UserService;
 
 import javax.validation.Valid;
@@ -12,28 +14,33 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping(path = "users")
 public class UserController {
     private final UserService userService;
-
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        return userService.createUser(user);
+    public Optional<User> addUser(@Valid @RequestBody UserDto userdto){
+        log.info("Запрос 'POST /users'");
+        return userService.createUser(userdto);
     }
     @PatchMapping("/{userId}")
-    public Optional<User> patchUser(@PathVariable long userId, @Valid @RequestBody User user) throws UserCrudException {
-        return userService.updateUser(userId,user);
+    public Optional<User> patchUser(@PathVariable long userId, @RequestBody UserDto userdto) {
+        log.info("Запрос 'PATCH /users/{}'", userId);
+        return userService.updateUser(userId,userdto);
     }
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable long userId) throws UserCrudException {
+    public void deleteUser(@PathVariable long userId) throws CrudException {
+        log.info("Запрос 'DELETE /users/{}'", userId);
         userService.deleteUser(userId);
     }
     @GetMapping("/{userId}")
-    public User findById(@PathVariable long userId) throws UserCrudException {
+    public User findById(@PathVariable long userId) throws CrudException {
+        log.info("Запрос 'GET /users/{}'", userId);
         return userService.readById(userId);
     }
     @GetMapping
     public Collection<User> findAll(){
+        log.info("Запрос 'GET /users'");
         return userService.readAll();
     }
 }

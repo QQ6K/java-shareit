@@ -5,8 +5,7 @@ import lombok.*;
 /**
  * TODO Sprint add-controllers.
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "id")
