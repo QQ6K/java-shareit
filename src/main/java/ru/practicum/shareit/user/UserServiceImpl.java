@@ -2,10 +2,8 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailConflictException;
-import ru.practicum.shareit.exceptions.EmptyFieldException;
 import ru.practicum.shareit.exceptions.NotExistException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -23,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User readById(Long userId) {
-        log.info("Создание пользователя  id: {}", userId);
+        log.info("Получение данных пользователя  id: {}", userId);
         return userRepository.readById(userId)
                 .orElseThrow(() -> new NotExistException("Пользователь не найден", "id", String.valueOf(userId)));
     }
@@ -31,14 +29,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> createUser(UserDto userDto) {
         User user;
-        if (Strings.isNotBlank(userDto.getEmail())) {
-            if (userRepository.readByEmail(userDto.getEmail()).isEmpty()) {
-                log.info("Создание пользователя  id: {}", userDto.getId());
-                user = userRepository.create(UserMapper.fromDto(userDto));
-            } else {
-                throw new EmailConflictException("Пользователь с таким email уже существует", "email", userDto.getEmail());
-            }
-        } else throw new EmptyFieldException("Необходимо заполнить email");
+        if (userRepository.readByEmail(userDto.getEmail()).isEmpty()) {
+            user = userRepository.create(UserMapper.fromDto(userDto));
+            log.info("Создание пользователя  id: {}", user.getId());
+        } else {
+            throw new EmailConflictException("Пользователь с таким email уже существует", "email", userDto.getEmail());
+        }
         return userRepository.readById(user.getId());
     }
 

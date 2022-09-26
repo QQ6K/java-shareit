@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -12,11 +12,11 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 public class ItemDto {
     private Long id;
-    @NotBlank
+    @NotEmpty(message = "Пустое поле 'Имя'")
     private String name;
-    @NotBlank
+    @NotEmpty(message = "Пустое поле 'Описание'")
     private String description;
-    @NotNull
+    @NotNull(message = "Отсутствует поле 'Статус'")
     private Boolean available;
     private Long owner;
     String request;

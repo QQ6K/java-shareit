@@ -13,33 +13,38 @@ import java.util.Optional;
 
 
 @RequiredArgsConstructor
-@RestController
+@RestControllerAdvice
 @Slf4j
-@RequestMapping(path = "users")
+@RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
+
     @PostMapping
-    public Optional<User> addUser(@Valid @RequestBody UserDto userdto){
+    public Optional<User> addUser(@Valid @RequestBody UserDto userdto) {
         log.info("Запрос 'POST /users'");
         return userService.createUser(userdto);
     }
+
     @PatchMapping("/{userId}")
-    public Optional<User> patchUser(@PathVariable long userId, @RequestBody UserDto userdto) {
+    public Optional<User> patchUser(@Valid @PathVariable long userId, @RequestBody UserDto userdto) {
         log.info("Запрос 'PATCH /users/{}'", userId);
-        return userService.updateUser(userId,userdto);
+        return userService.updateUser(userId, userdto);
     }
+
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable long userId) throws CrudException {
         log.info("Запрос 'DELETE /users/{}'", userId);
         userService.deleteUser(userId);
     }
+
     @GetMapping("/{userId}")
     public User findById(@PathVariable long userId) throws CrudException {
         log.info("Запрос 'GET /users/{}'", userId);
         return userService.readById(userId);
     }
+
     @GetMapping
-    public Collection<User> findAll(){
+    public Collection<User> findAll() {
         log.info("Запрос 'GET /users'");
         return userService.readAll();
     }

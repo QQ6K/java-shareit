@@ -3,8 +3,7 @@ package ru.practicum.shareit.item.interfaces;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public interface ItemService {
 
@@ -17,4 +16,5 @@ public interface ItemService {
 
     Optional<Item> createItem(Long userId, ItemDto itemDto);
 
+    List<Item> searchText(String text);
 }

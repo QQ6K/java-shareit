@@ -14,21 +14,21 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public Optional<Item> readById(Long itemId) {
-        return itemRepository.keySet().stream().filter(i -> i == itemId).findAny().map(itemRepository::get);
+        return itemRepository.keySet().stream().filter(i -> Objects.equals(i, itemId)).findAny().map(itemRepository::get);
     }
 
     @Override
-    public Item createItem(Item item) {
+    public void createItem(Item item) {
         item.setId(id);
         id++;
         itemRepository.put(item.getId(), item);
-        return itemRepository.get(item.getId());
+        itemRepository.get(item.getId());
     }
 
     @Override
-    public Item updateItem(Long itemId, Item item) {
+    public void updateItem(Long itemId, Item item) {
         itemRepository.put(itemId, item);
-        return itemRepository.get(item.getId());
+        itemRepository.get(item.getId());
     }
 
     @Override
@@ -40,6 +40,15 @@ public class InMemoryItemRepository implements ItemRepository {
     public Collection<Item> readAll(Long userId) {
         return itemRepository.values().stream()
                 .filter(item -> item.getOwner().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Item> searchText(String text) {
+        return itemRepository.values().stream()
+                .filter((Item::getAvailable))
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                                || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .collect(Collectors.toList());
     }
 }
