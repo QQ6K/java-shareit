@@ -38,13 +38,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable long userId) throws CrudException {
+    public User readById(@PathVariable long userId) throws CrudException {
         log.info("Запрос 'GET /users/{}'", userId);
         return userService.readById(userId);
     }
 
     @GetMapping
-    public Collection<User> findAll() {
+    public Collection<User> readAll() {
         log.info("Запрос 'GET /users'");
         return userService.readAll();
     }

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class UserDto {
-    private long id;
+    private Long id;
     @NotEmpty(message = "Пустое поле имя")
     private String name;
     @NotEmpty(message = "Пустое поле email")

@@ -45,10 +45,14 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public List<Item> searchText(String text) {
-        return itemRepository.values().stream()
-                .filter((Item::getAvailable))
-                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
-                                || item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                .collect(Collectors.toList());
+        List<Item> searchResult;
+        if (!text.isEmpty()) {
+            searchResult = itemRepository.values().stream()
+                    .filter((Item::getAvailable))
+                    .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                            || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                    .collect(Collectors.toList());
+            return searchResult;
+        } else return Collections.emptyList();
     }
 }

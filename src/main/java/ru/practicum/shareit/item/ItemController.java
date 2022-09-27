@@ -12,9 +12,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RequiredArgsConstructor
 @Slf4j
 @RestControllerAdvice
@@ -43,13 +40,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item findById(@PathVariable long itemId) {
+    public Item readById(@PathVariable long itemId) {
         log.info("Запрос 'GET /items/{}'", itemId);
         return itemService.readById(itemId);
     }
 
     @GetMapping
-    public Collection<Item> findAll(@RequestHeader("X-Sharer-User-Id") @NotNull(message = "Отсутсвует X-Sharer-User-Id")
+    public Collection<Item> readAll(@RequestHeader("X-Sharer-User-Id") @NotNull(message = "Отсутсвует X-Sharer-User-Id")
                                     long userId) {
         log.info("Запрос 'GET /items' пользователя " + userId);
         return itemService.readAll(userId);
