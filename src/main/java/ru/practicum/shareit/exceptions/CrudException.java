@@ -1,6 +1,6 @@
 package ru.practicum.shareit.exceptions;
 
-public class CrudException extends RuntimeException{
+public class CrudException extends RuntimeException {
     String param;
     String value;
 

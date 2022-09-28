@@ -16,8 +16,6 @@ import ru.practicum.shareit.item.interfaces.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.interfaces.UserRepository;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +45,7 @@ public class ItemControllerTest {
         ItemDto testItemDto3 = EntitiesForTests.getTestItem3();
         UserDto testDtoUser3 = EntitiesForTests.getTestUserDto3();
 
-       mvc.perform(post("/users")
+        mvc.perform(post("/users")
                 .content(objectMapper.writeValueAsString(testDtoUser3))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -97,7 +95,7 @@ public class ItemControllerTest {
                 .content(objectMapper.writeValueAsString(testItemDto2))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("X-Sharer-User-Id", 2));
-        mvc.perform(get("/items/2") .header("X-Sharer-User-Id", 2))
+        mvc.perform(get("/items/2").header("X-Sharer-User-Id", 2))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.name").value("Цветные цветы"))
@@ -117,11 +115,10 @@ public class ItemControllerTest {
     @Order(5)
     @Test
     void getAllUserTest() throws Exception {
-        mvc.perform(get("/items") .header("X-Sharer-User-Id", 3))
+        mvc.perform(get("/items").header("X-Sharer-User-Id", 3))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id").value(3));
     }
-
 
 
 }
