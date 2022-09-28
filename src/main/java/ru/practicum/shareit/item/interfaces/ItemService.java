@@ -8,11 +8,9 @@ import java.util.*;
 public interface ItemService {
 
     Optional<Item> updateItem(Long userId, Long itemId, ItemDto itemDto);
-
     void deleteItem(Long itemId);
     Item readById(Long itemId);
-
-     Collection<Item> readAll(Long userId);
+    Collection<Item> readAll(Long userId);
 
     Optional<Item> createItem(Long userId, ItemDto itemDto);
 
