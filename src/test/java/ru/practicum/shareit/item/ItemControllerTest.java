@@ -45,42 +45,34 @@ public class ItemControllerTest {
         ItemDto testItemDto1 = EntitiesForTests.getTestItem1();
         ItemDto testItemDto2 = EntitiesForTests.getTestItem2();
         ItemDto testItemDto3 = EntitiesForTests.getTestItem3();
-        UserDto testDtoUser1 = EntitiesForTests.getTestUserDto1();
-        UserDto testDtoUser2 = EntitiesForTests.getTestUserDto2();
+        UserDto testDtoUser3 = EntitiesForTests.getTestUserDto3();
 
-        mvc.perform(post("/users")
-                .content(objectMapper.writeValueAsString(testDtoUser2))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        mvc.perform(post("/users")
-                .content(objectMapper.writeValueAsString(testDtoUser1))
+       mvc.perform(post("/users")
+                .content(objectMapper.writeValueAsString(testDtoUser3))
                 .contentType(MediaType.APPLICATION_JSON));
 
         mvc.perform(post("/items")
                         .content(objectMapper.writeValueAsString(testItemDto1))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8.name())
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", 3))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Гвоздь"))
                 .andExpect(jsonPath("$.description").value("Очень хорошие гвозди"))
                 .andExpect(jsonPath("$.available").value("true"))
-                .andExpect(jsonPath("$.owner").value("1"))
+                .andExpect(jsonPath("$.owner").value("3"))
                 .andExpect(jsonPath("$.request").value("ссылка.гвоздь.1"));
 
 
         mvc.perform(post("/items")
                 .content(objectMapper.writeValueAsString(testItemDto2))
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8.name())
                 .header("X-Sharer-User-Id", 2));
 
         mvc.perform(post("/items")
                 .content(objectMapper.writeValueAsString(testItemDto3))
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .header("X-Sharer-User-Id", 1));
+                .header("X-Sharer-User-Id", 3));
     }
 
     @Order(2)
@@ -92,7 +84,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.name").value("Гвоздь"))
                 .andExpect(jsonPath("$.description").value("Очень хорошие гвозди"))
                 .andExpect(jsonPath("$.available").value("true"))
-                .andExpect(jsonPath("$.owner").value("1"))
+                .andExpect(jsonPath("$.owner").value("3"))
                 .andExpect(jsonPath("$.request").value("ссылка.гвоздь.1"));
     }
 
@@ -104,7 +96,6 @@ public class ItemControllerTest {
         mvc.perform(patch("/items/2")
                 .content(objectMapper.writeValueAsString(testItemDto2))
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8.name())
                 .header("X-Sharer-User-Id", 2));
         mvc.perform(get("/items/2") .header("X-Sharer-User-Id", 2))
                 .andExpect(status().isOk())
@@ -126,7 +117,7 @@ public class ItemControllerTest {
     @Order(5)
     @Test
     void getAllUserTest() throws Exception {
-        mvc.perform(get("/items") .header("X-Sharer-User-Id", 1))
+        mvc.perform(get("/items") .header("X-Sharer-User-Id", 3))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id").value(3));
     }

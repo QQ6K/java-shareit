@@ -17,6 +17,12 @@ public class EntitiesForTests {
             "doornail@test.test"
     );
 
+    private static final UserDto userDto3 = new UserDto(
+            3L,
+            "Катя",
+            "katya@test.test"
+    );
+
     private static final ItemDto itemDto1 = new ItemDto(
             1L,
             "Гвоздь",
@@ -50,6 +56,10 @@ public class EntitiesForTests {
 
     public static UserDto getTestUserDto2() {
         return userDto2;
+    }
+
+    public static UserDto getTestUserDto3() {
+        return userDto3;
     }
 
     public static ItemDto getTestItem1() {
