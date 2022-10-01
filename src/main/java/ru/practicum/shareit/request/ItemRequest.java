@@ -7,14 +7,13 @@ import java.time.LocalDateTime;
 /**
  * TODO Sprint add-item-requests.
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class ItemRequest {
-    Long id;
-    String description;
-    Long requestor;
-    LocalDateTime created;
+    private Long id;
+    private String description;
+    private Long requestor;
+    private LocalDateTime created;
 }

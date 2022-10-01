@@ -3,8 +3,8 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.exceptions.EmailConflictException;
-import ru.practicum.shareit.exceptions.NotExistException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.interfaces.UserRepository;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     public User readById(Long userId) {
         log.info("Получение данных пользователя  id: {}", userId);
         return userRepository.readById(userId)
-                .orElseThrow(() -> new NotExistException("Пользователь не найден", "id", String.valueOf(userId)));
+                .orElseThrow(() -> new CrudException("Пользователь не найден", "id", String.valueOf(userId)));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> updateUser(long userId, UserDto userDto) {
         User updateUser = userRepository.readById(userId)
-                .orElseThrow(() -> new NotExistException("Пользователь не существует",
+                .orElseThrow(() -> new CrudException("Пользователь не существует",
                         "id", String.valueOf(userDto.getId())));
         if (userDto.getName() != null) {
             updateUser.setName(userDto.getName());
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteUser(userId);
             log.info("Удален  пользователь  id: {}", userId);
         } else {
-            throw new NotExistException("Пользователь с таким id не существует", "id", String.valueOf(userId));
+            throw new CrudException("Пользователь с таким id не существует", "id", String.valueOf(userId));
         }
     }
 

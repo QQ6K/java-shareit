@@ -3,9 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.NotExistException;
-import ru.practicum.shareit.exceptions.UserNotExistException;
-import ru.practicum.shareit.exceptions.UserNotOwnerException;
+import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.exceptions.UserValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.interfaces.ItemRepository;
@@ -27,12 +26,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item readById(Long itemId) {
         return itemRepository.readById(itemId)
-                .orElseThrow(() -> new NotExistException("Вещь не найдена", "id", String.valueOf(itemId)));
+                .orElseThrow(() -> new CrudException("Вещь не найдена", "id", String.valueOf(itemId)));
     }
 
     @Override
     public Collection<Item> readAll(Long userId) {
-        userRepository.readById(userId).orElseThrow(() -> new UserNotExistException("Пользователя не существует",
+        userRepository.readById(userId).orElseThrow(() -> new UserValidException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         return itemRepository.readAll(userId);
     }
@@ -40,10 +39,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Optional<Item> createItem(Long userId, ItemDto itemDto) {
         if (userRepository.readById(userId).isEmpty()) {
-            throw new UserNotExistException("Пользователя не существует",
+            throw new UserValidException("Пользователя не существует",
                     "id", String.valueOf(userId));
         }
-        userRepository.readById(userId).orElseThrow(() -> new UserNotExistException("Пользователя не существует",
+        userRepository.readById(userId).orElseThrow(() -> new UserValidException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(userId);
@@ -55,11 +54,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Optional<Item> updateItem(Long userId, Long itemId, ItemDto itemDto) {
         Item updateItem = itemRepository.readById(itemId)
-                .orElseThrow(() -> new NotExistException("Вещи не существует",
+                .orElseThrow(() -> new CrudException("Вещи не существует",
                         "id", String.valueOf(itemDto.getId())));
         if (!updateItem.getOwner().equals(userId)) {
             throw
-                    new UserNotOwnerException("У пользователя отсутствуют права на изменения характеристик вещи",
+                    new UserValidException("У пользователя отсутствуют права на изменения характеристик вещи",
                             "Пользователь " + userId, "вещь " + itemId);
         }
         if (itemDto.getName() != null) {
@@ -82,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
             log.info("Удалена вещь  id: {}", itemId);
 
         } else {
-            throw new NotExistException("Вещь с таким id не существует", "id", String.valueOf(itemId));
+            throw new CrudException("Вещь с таким id не существует", "id", String.valueOf(itemId));
         }
     }
 

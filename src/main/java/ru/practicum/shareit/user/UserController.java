@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @RequiredArgsConstructor
-@RestControllerAdvice
+@RestController
 @Slf4j
 @RequestMapping(path = "/users")
 public class UserController {
