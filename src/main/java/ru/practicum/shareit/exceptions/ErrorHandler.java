@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,18 +7,16 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exceptions.ErrorResponse;
-import ru.practicum.shareit.exceptions.UserValidException;
 
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-@RestControllerAdvice("ru.practicum.shareit.item")
-public class ItemErrorHandler {
-    @ExceptionHandler(UserValidException.class)
+@RestControllerAdvice
+public class ErrorHandler {
+    @ExceptionHandler(EmptyUserValidException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> userValidException(UserValidException e) {
+    public Map<String, String> userValidException(EmptyUserValidException e) {
         log.error(e.getMessage());
         return Map.of("Ошибка", e.getMessage(), e.getParam(), e.getValue());
     }
@@ -33,9 +31,16 @@ public class ItemErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> validExceptionItem(MethodArgumentNotValidException e) {
+    public Map<String, String> validException(MethodArgumentNotValidException e) {
         log.error(e.getMessage());
         return Map.of("Ошибка", Objects.requireNonNull(e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+    }
+
+    @ExceptionHandler(EmailConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> conflictException(EmailConflictException e) {
+        log.error(e.getMessage());
+        return Map.of("Конфликт", e.getMessage(), e.getParam(), e.getValue());
     }
 
     @ExceptionHandler(Exception.class)
@@ -44,5 +49,4 @@ public class ItemErrorHandler {
         log.error(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
-
 }

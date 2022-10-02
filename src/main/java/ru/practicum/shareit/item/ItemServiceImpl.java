@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CrudException;
-import ru.practicum.shareit.exceptions.UserValidException;
+import ru.practicum.shareit.exceptions.EmptyUserValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.interfaces.ItemRepository;
@@ -31,7 +31,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> readAll(Long userId) {
-        userRepository.readById(userId).orElseThrow(() -> new UserValidException("Пользователя не существует",
+        userRepository.readById(userId).orElseThrow(() -> new EmptyUserValidException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         return itemRepository.readAll(userId);
     }
@@ -39,10 +39,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Optional<Item> createItem(Long userId, ItemDto itemDto) {
         if (userRepository.readById(userId).isEmpty()) {
-            throw new UserValidException("Пользователя не существует",
+            throw new EmptyUserValidException("Пользователя не существует",
                     "id", String.valueOf(userId));
         }
-        userRepository.readById(userId).orElseThrow(() -> new UserValidException("Пользователя не существует",
+        userRepository.readById(userId).orElseThrow(() -> new EmptyUserValidException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(userId);
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
                         "id", String.valueOf(itemDto.getId())));
         if (!updateItem.getOwner().equals(userId)) {
             throw
-                    new UserValidException("У пользователя отсутствуют права на изменения характеристик вещи",
+                    new EmptyUserValidException("У пользователя отсутствуют права на изменения характеристик вещи",
                             "Пользователь " + userId, "вещь " + itemId);
         }
         if (itemDto.getName() != null) {
