@@ -17,7 +17,7 @@ public class ItemDto {
     @NotEmpty(message = "Пустое поле 'Описание'")
     private String description;
     @NotNull(message = "Отсутствует поле 'Статус'")
-    private Boolean available;
-    private Long owner;
-    String request;
+    private Boolean is_available;
+    private Long owner_id;
+    String request_id;
 }

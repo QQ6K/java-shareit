@@ -39,7 +39,7 @@ public class InMemoryItemRepository implements ItemRepository {
     @Override
     public Collection<Item> readAll(Long userId) {
         return itemRepository.values().stream()
-                .filter(item -> item.getOwner().equals(userId))
+                .filter(item -> item.getOwner_id().equals(userId))
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +48,7 @@ public class InMemoryItemRepository implements ItemRepository {
         List<Item> searchResult;
         if (!text.isEmpty()) {
             searchResult = itemRepository.values().stream()
-                    .filter((Item::getAvailable))
+                    .filter((Item::getIs_available))
                     .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
                             || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                     .collect(Collectors.toList());

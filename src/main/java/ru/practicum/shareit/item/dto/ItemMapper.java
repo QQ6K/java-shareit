@@ -8,9 +8,9 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
-                item.getOwner(),
-                item.getRequest());
+                item.getIs_available(),
+                item.getOwner_id(),
+                item.getRequest_id());
     }
 
     public static Item fromDto(ItemDto itemDto) {
@@ -18,9 +18,9 @@ public class ItemMapper {
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable(),
-                itemDto.getOwner(),
-                itemDto.getRequest());
+                itemDto.getIs_available(),
+                itemDto.getOwner_id(),
+                itemDto.getRequest_id());
 
     }
 }

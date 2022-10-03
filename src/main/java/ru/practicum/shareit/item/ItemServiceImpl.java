@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
         userRepository.readById(userId).orElseThrow(() -> new EmptyUserValidException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
-        item.setOwner(userId);
+        item.setOwner_id(userId);
         itemRepository.createItem(item);
         log.info("Создание вещи  id: {}", item.getId());
         return itemRepository.readById(item.getId());
@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
         Item updateItem = itemRepository.readById(itemId)
                 .orElseThrow(() -> new CrudException("Вещи не существует",
                         "id", String.valueOf(itemDto.getId())));
-        if (!updateItem.getOwner().equals(userId)) {
+        if (!updateItem.getOwner_id().equals(userId)) {
             throw
                     new EmptyUserValidException("У пользователя отсутствуют права на изменения характеристик вещи",
                             "Пользователь " + userId, "вещь " + itemId);
@@ -67,8 +67,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() != null) {
             updateItem.setDescription(itemDto.getDescription());
         }
-        if (itemDto.getAvailable() != null) {
-            updateItem.setAvailable(itemDto.getAvailable());
+        if (itemDto.getIs_available() != null) {
+            updateItem.setIs_available(itemDto.getIs_available());
         }
         itemRepository.updateItem(itemId, updateItem);
         return itemRepository.readById(itemId);
