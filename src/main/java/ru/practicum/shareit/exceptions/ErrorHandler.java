@@ -14,9 +14,9 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler(EmptyUserValidException.class)
+    @ExceptionHandler({CrudException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> userValidException(EmptyUserValidException e) {
+    public Map<String, String> userValidException(CrudException e) {
         log.error(e.getMessage());
         return Map.of("Ошибка", e.getMessage(), e.getParam(), e.getValue());
     }
