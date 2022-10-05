@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -17,7 +18,7 @@ public class ItemDto {
     @NotEmpty(message = "Пустое поле 'Описание'")
     private String description;
     @NotNull(message = "Отсутствует поле 'Статус'")
-    private Boolean is_available;
+    private Boolean available;
     private Long owner_id;
     String request_id;
 }

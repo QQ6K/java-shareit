@@ -17,7 +17,7 @@ public class Item {
     private Long id;
     private String name;
     private String description;
-    private Boolean is_available;
+    private Boolean available;
     private Long owner_id;
     private String request_id;
 }

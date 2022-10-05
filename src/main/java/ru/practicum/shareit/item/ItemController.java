@@ -20,7 +20,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public Optional<Item> addItem(@Valid @RequestHeader("X-Sharer-User-Id")
+    public Optional<Item> saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
                                   Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Запрос 'POST /items'");
         return itemService.createItem(userId, itemDto);

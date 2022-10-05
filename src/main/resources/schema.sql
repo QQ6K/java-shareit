@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS items (
     name VARCHAR(255) NOT NULL,
     description VARCHAR(4000) NOT NULL,
     owner_id BIGINT NOT NULL,
-    is_available BOOLEAN NOT NULL,
+    available BOOLEAN NOT NULL,
     request_id VARCHAR(255),
     CONSTRAINT pk_item PRIMARY KEY (id),
     CONSTRAINT fk_items_owner_id FOREIGN KEY (owner_id) REFERENCES users (id),

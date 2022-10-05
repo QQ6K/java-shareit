@@ -14,6 +14,13 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> NotAvailableException(BadRequestException e) {
+        log.error(e.getMessage());
+        return Map.of("Ошибка:", e.getMessage());
+    }
     @ExceptionHandler({CrudException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> userValidException(CrudException e) {

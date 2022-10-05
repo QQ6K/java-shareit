@@ -3,10 +3,11 @@ package ru.practicum.shareit.item.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.interfaces.ItemRepository;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.interfaces.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Slf4j
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -40,11 +42,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Optional<Item> createItem(Long userId, ItemDto itemDto) {
-        if (userRepository.findById(userId).isEmpty()) {
+      /*  if (userRepository.findById(userId).isEmpty()) {
             throw new CrudException("Пользователя не существует",
                     "id", String.valueOf(userId));
-        }
+        }*/
         userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
@@ -55,6 +58,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Optional<Item> updateItem(Long userId, Long itemId, ItemDto itemDto) {
         Item updateItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещи не существует",
@@ -70,14 +74,15 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() != null) {
             updateItem.setDescription(itemDto.getDescription());
         }
-        if (itemDto.getIs_available() != null) {
-            updateItem.setIs_available(itemDto.getIs_available());
+        if (itemDto.getAvailable() != null) {
+            updateItem.setAvailable(itemDto.getAvailable());
         }
         itemRepository.save(updateItem);
         return itemRepository.findById(itemId);
     }
 
     @Override
+    @Transactional
     public void deleteItem(Long itemId) {
         if (itemRepository.findById(itemId).isPresent()) {
             itemRepository.deleteById(itemId);
@@ -93,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> searchResult;
         if (!text.isEmpty()) {
             searchResult = itemRepository.findAll().stream()
-                    .filter((Item::getIs_available))
+                    .filter((Item::getAvailable))
                     .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
                             || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                     .collect(Collectors.toList());

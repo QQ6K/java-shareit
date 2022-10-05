@@ -8,7 +8,7 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getIs_available(),
+                item.getAvailable(),
                 item.getOwner_id(),
                 item.getRequest_id());
     }
@@ -18,7 +18,7 @@ public class ItemMapper {
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getIs_available(),
+                itemDto.getAvailable(),
                 itemDto.getOwner_id(),
                 itemDto.getRequest_id());
 
