@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import resources.EntitiesForTests;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -28,10 +28,10 @@ public class ItemControllerTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository userRepository;
 
     @Autowired
-    ItemRepository itemRepository;
+    ItemsRepository itemRepository;
 
     @Autowired
     MockMvc mvc;

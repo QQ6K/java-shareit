@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.interfaces.ItemService;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UsersRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final ItemsRepository itemRepository;
+    private final UsersRepository userRepository;
 
     @Override
     public Item readById(Long itemId) {
@@ -87,7 +87,6 @@ public class ItemServiceImpl implements ItemService {
         if (itemRepository.findById(itemId).isPresent()) {
             itemRepository.deleteById(itemId);
             log.info("Удалена вещь  id: {}", itemId);
-
         } else {
             throw new CrudException("Вещь с таким id не существует", "id", String.valueOf(itemId));
         }
@@ -95,6 +94,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchText(String text) {
+        //TODO:log
         List<Item> searchResult;
         if (!text.isEmpty()) {
             searchResult = itemRepository.findAll().stream()

@@ -5,20 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingsRepository;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoExport;
+import ru.practicum.shareit.booking.dto.BookingDtoImport;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.interfaces.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,32 +29,32 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingsRepository bookingsRepository;
-    private final UserRepository userRepository;
-
-    private final ItemRepository itemRepository;
+    private final UsersRepository usersRepository;
+    private final ItemsRepository itemsRepository;
 
     @Override
-    public Optional<Booking> createBooking(Long userId, BookingDto bookingDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
-                "id", String.valueOf(userId)));
-       /* User owner = userRepository.findById(bookingDto.getId()).orElseThrow(() -> new CrudException("Пользователя не существует",
-                "id", String.valueOf(bookingDto.getId())));*/
-        Item item = itemRepository.findById(bookingDto.getItemId())
+    @Transactional
+    public Booking createBooking(Long userId, BookingDtoImport bookingDto) {
+        User user = usersRepository.findById(userId)
+                .orElseThrow(() -> new CrudException("Пользователя не существует",
+                        "id", String.valueOf(userId)));
+        Item item = itemsRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new CrudException("Вещи не существует",
-                "id", String.valueOf(bookingDto.getItemId())));
+                        "id", String.valueOf(bookingDto.getItemId())));
         if (!item.getAvailable()) {
-            throw new BadRequestException("Вещь занята id=" + item.getId());}
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) ||bookingDto.getEnd().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Вещь занята id=" + item.getId());
+        }
+        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Дата старта бронирования или окончания в прошлом");
         }
         if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
             throw new BadRequestException("Окончание бронирования раньше старта окончания бронирования");
         }
-        Booking booking = BookingMapper.fromDto(bookingDto);
+        Booking booking = new Booking(0L, bookingDto.getStart(), bookingDto.getEnd(), bookingDto.getItemId(), userId, BookingStatus.WAITING);
         booking.setBooker_id(userId);
-        bookingsRepository.save(booking);
+        booking = bookingsRepository.save(booking);
         log.info("Создание бронирования  id: {}", booking.getId());
-        return bookingsRepository.findById(booking.getId());
+        return booking;
     }
 
     @Override
@@ -63,8 +64,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> readAll(Long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+    public Collection<Booking> readAllUser(Long userId) {
+        usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         return bookingsRepository.findAll().stream()
                 .filter(item -> item.getBooker_id().equals(userId))
@@ -72,12 +73,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Optional<Booking> updateBooking() {
-        return Optional.empty();
+    public Collection<Booking> readAllOwner(Long userId) {
+        usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+                "id", String.valueOf(userId)));
+        return bookingsRepository.findAll().stream()
+                .filter(item -> item.getBooker_id().equals(userId))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void deleteItem() {
-
+    public BookingDtoExport updateBooking(Long userId, Long bookingId, Boolean approved) {
+        Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
+                new CrudException("Вещи не существует",
+                        "id", String.valueOf(bookingId)));
+        if (approved.equals(true)) {
+            booking.setStatus(BookingStatus.APPROVED);
+        } else if (approved.equals(false)) {
+        }
+        Item item = itemsRepository.findById(booking.getItem_id()).orElseThrow(() ->
+                new CrudException("Вещи не существует",
+                        "id", String.valueOf(bookingId)));
+        User user = usersRepository.findById(userId).orElseThrow(() ->
+                new CrudException("Пользователя не существует",
+                        "id", String.valueOf(bookingId)));
+        log.info("Изменение статуса бронирования  id: {}", booking.getId());
+        return BookingMapper.toDto(booking, user, item);
     }
 }

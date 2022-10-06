@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.exceptions.EmailConflictException;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.interfaces.UserService;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+    private final UsersRepository userRepository;
 
     @Override
     public User readById(Long userId) {

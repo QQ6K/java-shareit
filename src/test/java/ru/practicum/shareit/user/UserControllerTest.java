@@ -25,7 +25,7 @@ public class UserControllerTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository userRepository;
     @Autowired
     MockMvc mvc;
 
