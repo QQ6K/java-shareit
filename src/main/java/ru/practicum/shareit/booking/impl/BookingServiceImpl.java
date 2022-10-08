@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoImport;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.interfaces.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.enums.BookingState;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
@@ -20,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,53 +52,84 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
             throw new BadRequestException("Окончание бронирования раньше старта окончания бронирования");
         }
-        Booking booking = new Booking(0L, bookingDto.getStart(), bookingDto.getEnd(), bookingDto.getItemId(), userId, BookingStatus.WAITING);
-        booking.setBooker_id(userId);
+        Booking booking = new Booking(0L, bookingDto.getStart(), bookingDto.getEnd(), item, user, BookingStatus.WAITING);
         booking = bookingsRepository.save(booking);
         log.info("Создание бронирования  id: {}", booking.getId());
         return booking;
     }
 
     @Override
-    public Booking readById(Long bookingId) {
-        return bookingsRepository.findById(bookingId)
-                .orElseThrow(() -> new CrudException("Бронирование не найдено", "id", String.valueOf(bookingId)));
+    public BookingDtoExport readById(Long bookingId) {
+        Booking booking = bookingsRepository.findById(bookingId)
+                .orElseThrow(() -> new CrudException("Бронирование не найдено", "id",
+                        String.valueOf(bookingId)));
+        User booker = usersRepository.findById(booking.getBooker().getId())
+                .orElseThrow(() -> new CrudException("Пользователь не найден", "id",
+                        String.valueOf(booking.getBooker())));
+        Item item = itemsRepository.findById(booking.getItem().getId())
+                .orElseThrow(() -> new CrudException("Бронирование не найдено", "id",
+                        String.valueOf(bookingId)));
+        return BookingMapper.toDto(booking, booker, item);
     }
 
     @Override
     public Collection<Booking> readAllUser(Long userId) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        return bookingsRepository.findAll().stream()
-                .filter(item -> item.getBooker_id().equals(userId))
+        Collection<Booking> bookings = bookingsRepository.findAll().stream()
+                .filter(user -> user.getBooker().getId().equals(userId))
+                .sorted(Comparator.comparing(Booking::getStart_date).reversed())
                 .collect(Collectors.toList());
+        Collection<Booking> bookings1 = bookingsRepository.findAll().stream()
+                .collect(Collectors.toList());
+        return bookings;
     }
 
     @Override
-    public Collection<Booking> readAllOwner(Long userId) {
-        usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
-                "id", String.valueOf(userId)));
-        return bookingsRepository.findAll().stream()
-                .filter(item -> item.getBooker_id().equals(userId))
-                .collect(Collectors.toList());
+    public Collection<Booking> readAllOwner(Long userId, String state) {
+        BookingState bookingState = null;
+        try {
+            bookingState = BookingState.valueOf(state);
+        } finally {
+            bookingState = BookingState.ALL;
+        }
+        switch (bookingState) {
+            case ALL:
+                return readAllUser(userId);
+            case FUTURE:
+            case PAST:
+            case CURRENT:
+            case REJECTED:
+            default:
+                return readAllUser(userId);
+        }
+        //log.info("Запрос бронирование владельца id: {}", userId);
+       // return null; // bookings;
     }
 
     @Override
-    public BookingDtoExport updateBooking(Long userId, Long bookingId, Boolean approved) {
+    @Transactional
+    public Booking updateBooking(Long userId, Long bookingId, Boolean approved) {
+        Collection<Booking> bookings = bookingsRepository.findAll().stream()
+                .collect(Collectors.toList());
         Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
                 new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingId)));
         if (approved.equals(true)) {
             booking.setStatus(BookingStatus.APPROVED);
         } else if (approved.equals(false)) {
+            booking.setStatus(BookingStatus.REJECTED);
         }
-        Item item = itemsRepository.findById(booking.getItem_id()).orElseThrow(() ->
+        Item item = itemsRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingId)));
-        User user = usersRepository.findById(userId).orElseThrow(() ->
+        User user = usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
                 new CrudException("Пользователя не существует",
                         "id", String.valueOf(bookingId)));
         log.info("Изменение статуса бронирования  id: {}", booking.getId());
-        return BookingMapper.toDto(booking, user, item);
+        bookings = bookingsRepository.findAll().stream()
+                .collect(Collectors.toList());
+        return bookingsRepository.save(booking);
     }
+
 }
