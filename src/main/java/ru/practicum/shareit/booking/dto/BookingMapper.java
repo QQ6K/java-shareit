@@ -8,8 +8,8 @@ public class BookingMapper {
     public static BookingDtoExport toDto(Booking booking, User booker, Item item) {
         return new BookingDtoExport(
                 booking.getId(),
-                booking.getStart_date(),
-                booking.getEnd_date(),
+                booking.getStartDate(),
+                booking.getEndDate(),
                 booker,
                 item,
                 booking.getStatus());

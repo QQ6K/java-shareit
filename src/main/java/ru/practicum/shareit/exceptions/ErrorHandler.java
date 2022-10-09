@@ -14,7 +14,19 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+    @ExceptionHandler({WrongUserException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> StateException(WrongUserException e) {
+        log.error(e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
 
+    @ExceptionHandler({StateException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> StateException(StateException e) {
+        log.error(e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
     @ExceptionHandler({BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> NotAvailableException(BadRequestException e) {

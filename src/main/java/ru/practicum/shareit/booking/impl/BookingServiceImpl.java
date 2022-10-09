@@ -14,6 +14,8 @@ import ru.practicum.shareit.enums.BookingState;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.exceptions.StateException;
+import ru.practicum.shareit.exceptions.WrongUserException;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UsersRepository;
@@ -21,7 +23,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoExport readById(Long bookingId) {
+    public BookingDtoExport readById(Long bookingId, Long userId) {
         Booking booking = bookingsRepository.findById(bookingId)
                 .orElseThrow(() -> new CrudException("Бронирование не найдено", "id",
                         String.valueOf(bookingId)));
@@ -67,44 +68,71 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new CrudException("Пользователь не найден", "id",
                         String.valueOf(booking.getBooker())));
         Item item = itemsRepository.findById(booking.getItem().getId())
-                .orElseThrow(() -> new CrudException("Бронирование не найдено", "id",
+                .orElseThrow(() -> new CrudException("Вещь не найдена", "id",
                         String.valueOf(bookingId)));
-        return BookingMapper.toDto(booking, booker, item);
+        if (userId.equals(booking.getBooker().getId()) || userId.equals(booking.getItem().getOwner().getId())) {
+            return BookingMapper.toDto(booking, booker, item);
+        } else {
+            throw new WrongUserException("Это бронирование недоступно для пользователя id=" + userId);
+        }
     }
 
     @Override
-    public Collection<Booking> readAllUser(Long userId) {
+    public Collection<Booking> readAllUser(Long userId, String state) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        Collection<Booking> bookings = bookingsRepository.findAll().stream()
-                .filter(user -> user.getBooker().getId().equals(userId))
-                .sorted(Comparator.comparing(Booking::getStart_date).reversed())
-                .collect(Collectors.toList());
-        Collection<Booking> bookings1 = bookingsRepository.findAll().stream()
-                .collect(Collectors.toList());
-        return bookings;
+        BookingState bookingState;
+        try {
+            bookingState = BookingState.valueOf(state);}
+        catch (IllegalArgumentException e){
+            throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+        }
+            switch (bookingState) {
+                case ALL:
+                    return  bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId);
+                case FUTURE:
+                    return  bookingsRepository.findFuture(userId, LocalDateTime.now());
+                case PAST:
+                    return bookingsRepository.findByBookerIdStatePast(userId,
+                            LocalDateTime.now());
+                case CURRENT:
+                    return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now());
+                case REJECTED:
+                    return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+                case WAITING:
+                    return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
+                default: throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+            }
     }
 
     @Override
     public Collection<Booking> readAllOwner(Long userId, String state) {
-        BookingState bookingState = null;
+        usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+                "id", String.valueOf(userId)));
+        BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
-        } finally {
-            bookingState = BookingState.ALL;
         }
-        switch (bookingState) {
-            case ALL:
-                return readAllUser(userId);
-            case FUTURE:
-            case PAST:
-            case CURRENT:
-            case REJECTED:
-            default:
-                return readAllUser(userId);
+            catch (IllegalArgumentException e) {
+                throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+            }
+            switch (bookingState) {
+                case ALL:
+                    return bookingsRepository.findOwnerAll(userId);
+                case FUTURE:
+                    return bookingsRepository.findOwnerFuture(userId, LocalDateTime.now());
+                case PAST:
+                    return bookingsRepository.findOwnerPast(userId,
+                            LocalDateTime.now());
+                case CURRENT:
+                    return bookingsRepository.findOwnerCurrent(userId,
+                            LocalDateTime.now());
+                case REJECTED:
+                    return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.REJECTED);
+                case WAITING:
+                    return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING);
+                default:throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
-        //log.info("Запрос бронирование владельца id: {}", userId);
-       // return null; // bookings;
     }
 
     @Override
@@ -131,5 +159,6 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
         return bookingsRepository.save(booking);
     }
+
 
 }

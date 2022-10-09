@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.interfaces;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -20,4 +22,7 @@ public interface ItemService {
     Optional<Item> createItem(Long userId, ItemDto itemDto);
 
     List<Item> searchText(String text);
+
+    @Transactional
+    Comment addComment(Long itemId, long userId, String text);
 }

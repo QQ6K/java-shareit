@@ -24,9 +24,11 @@ public class Booking {
     @JsonProperty("id")
     private Long id;
     @JsonProperty("start")
-    private LocalDateTime start_date;
+    @JoinColumn(name = "start_date")
+    private LocalDateTime startDate;
     @JsonProperty("end")
-    private LocalDateTime end_date;
+    @JoinColumn(name = "end_date")
+    private LocalDateTime endDate;
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;

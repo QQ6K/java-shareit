@@ -9,7 +9,7 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getOwner_id(),
+                item.getOwner(),
                 item.getRequest_id());
     }
 
@@ -19,7 +19,7 @@ public class ItemMapper {
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                itemDto.getOwner_id(),
+                itemDto.getOwner(),
                 itemDto.getRequest_id());
 
     }

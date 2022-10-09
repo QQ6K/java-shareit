@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.interfaces.ItemService;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
@@ -18,6 +19,8 @@ import java.util.Optional;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
+
+    private final CommentsRepository commentsRepository;
 
     @PostMapping
     public Optional<Item> saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
@@ -56,5 +59,12 @@ public class ItemController {
     public Collection<Item> findByText(@RequestParam String text) {
         log.info("Запрос 'GET /search?text={}'", text);
         return itemService.searchText(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public Comment addComment(@PathVariable("itemId") Long itemId,
+                                 @RequestHeader("X-Sharer-User-Id") long userId,
+                                 @RequestBody @Valid Comment text) {
+        return itemService.addComment(itemId, userId, text.getText());
     }
 }

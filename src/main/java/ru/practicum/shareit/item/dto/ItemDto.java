@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
@@ -19,6 +20,6 @@ public class ItemDto {
     private String description;
     @NotNull(message = "Отсутствует поле 'Статус'")
     private Boolean available;
-    private Long owner_id;
+    private User owner;
     String request_id;
 }

@@ -12,7 +12,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.websocket.server.PathParam;
 import java.util.Collection;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,27 +30,34 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public Booking patchBooking(@RequestHeader("X-Sharer-User-Id")
-                                          @Valid @NotNull(message = "Отсутсвует X-Sharer-User-Id") long userId, @PathVariable Long bookingId, @RequestParam Boolean approved) {
+                                @Valid @NotNull(message = "Отсутсвует X-Sharer-User-Id") long userId,
+                                @PathVariable Long bookingId, @RequestParam Boolean approved) {
         log.info("Запрос 'PATCH /bookings/{}'", bookingId);
         return bookingService.updateBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDtoExport readById(@PathVariable long bookingId) {
+    public BookingDtoExport readById(@RequestHeader("X-Sharer-User-Id")
+                                     long userId,
+                                     @PathVariable long bookingId) {
         log.info("Запрос 'GET /bookings/{}'", bookingId);
-        return bookingService.readById(bookingId);
+        return bookingService.readById(bookingId, userId);
     }
 
     @GetMapping
-    public Collection<Booking> readAllUser(@RequestHeader("X-Sharer-User-Id") @NotNull(message = "Отсутсвует X-Sharer-User-Id")
+    public Collection<Booking> readAllUser(@RequestParam(defaultValue = "ALL", name = "state") String state,
+                                           @RequestHeader("X-Sharer-User-Id")
+                                           @NotNull(message = "Отсутсвует X-Sharer-User-Id")
                                            Long userId) {
         log.info("Запрос 'GET /items' пользователя " + userId);
-        return bookingService.readAllUser(userId);
+        return bookingService.readAllUser(userId, state);
     }
 
     @GetMapping("/owner")
-    public Collection<Booking> readAllOwner(@RequestHeader("X-Sharer-User-Id") @NotNull(message = "Отсутсвует X-Sharer-User-Id")
-                                            Long userId,    @PathParam("state") String state) {
+    public Collection<Booking> readAllOwner(@RequestHeader("X-Sharer-User-Id")
+                                            @NotNull(message = "Отсутсвует X-Sharer-User-Id")
+                                            Long userId,
+                                            @RequestParam(defaultValue = "ALL", name = "state") String state) {
         log.info("Запрос 'GET /items' пользователя " + userId);
         return bookingService.readAllOwner(userId, state);
     }

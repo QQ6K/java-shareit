@@ -11,9 +11,9 @@ public interface BookingService {
 
     Booking createBooking(Long userId, BookingDtoImport bookingDto);
 
-    BookingDtoExport readById(Long bookingId);
+    BookingDtoExport readById(Long bookingId, Long userId);
 
-    Collection<Booking> readAllUser(Long userId);
+    Collection<Booking> readAllUser(Long userId, String state);
 
     Collection<Booking> readAllOwner(Long userId, String state);
 

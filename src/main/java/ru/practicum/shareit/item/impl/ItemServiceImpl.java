@@ -4,14 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.interfaces.ItemService;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UsersRepository;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +32,10 @@ public class ItemServiceImpl implements ItemService {
     private final ItemsRepository itemRepository;
     private final UsersRepository userRepository;
 
+    private final CommentsRepository commentsRepository;
+
+    private final BookingsRepository bookingsRepository;
+
     @Override
     public Item readById(Long itemId) {
         return itemRepository.findById(itemId)
@@ -37,21 +47,17 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         return itemRepository.findAll().stream()
-                .filter(item -> item.getOwner_id().equals(userId))
+                .filter(item -> item.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public Optional<Item> createItem(Long userId, ItemDto itemDto) {
-      /*  if (userRepository.findById(userId).isEmpty()) {
-            throw new CrudException("Пользователя не существует",
-                    "id", String.valueOf(userId));
-        }*/
-        userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+        User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
-        item.setOwner_id(userId);
+        item.setOwner(user);
         itemRepository.save(item);
         log.info("Создание вещи  id: {}", item.getId());
         return itemRepository.findById(item.getId());
@@ -63,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
         Item updateItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещи не существует",
                         "id", String.valueOf(itemDto.getId())));
-        if (!updateItem.getOwner_id().equals(userId)) {
+        if (!updateItem.getOwner().getId().equals(userId)) {
             throw
                     new CrudException("У пользователя отсутствуют права на изменения характеристик вещи",
                             "Пользователь " + userId, "вещь " + itemId);
@@ -103,6 +109,22 @@ public class ItemServiceImpl implements ItemService {
                             || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                     .collect(Collectors.toList());
             return searchResult;
-        }else return Collections.emptyList();
+        } else return Collections.emptyList();
+    }
+
+    @Override
+    @Transactional
+    public Comment addComment(Long itemId, long userId, String text) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new CrudException("Вещи не существует",
+                        "id", String.valueOf(itemId)));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+                "id", String.valueOf(userId)));
+        if (bookingsRepository.usedCount(userId, itemId, LocalDateTime.now()) > 0) {
+            return commentsRepository.save(new Comment(0, text, item, user,
+                    LocalDateTime.now()));
+        } else {
+            throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
+        }
     }
 }
