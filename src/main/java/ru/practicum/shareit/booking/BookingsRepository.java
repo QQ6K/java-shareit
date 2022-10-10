@@ -16,10 +16,13 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
 
         @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.owner.id = :ownerId ORDER BY b.startDate DESC")
         Collection<Booking> findOwnerAll(long ownerId);
+
         @Query("SELECT b FROM Booking b " +
-                "WHERE b.booker.id=:id AND b.endDate<:nowTime AND upper(b.status) = UPPER('APPROVED')" +
+                "WHERE b.booker.id=:id AND b.endDate<:nowTime AND b.status =:status " +
                 "ORDER BY b.startDate DESC")
-        Collection<Booking> findByBookerIdStatePast(@Param("id") Long id, @Param("nowTime") LocalDateTime nowTime);
+        Collection<Booking> findByBookerIdStatePast(@Param("id") Long id,
+                                                    @Param("nowTime") LocalDateTime nowTime,
+                                                    @Param("status") BookingStatus status);
 
         @Query("SELECT b FROM Booking b WHERE b.booker.id=:useId AND b.endDate >= :nowTime AND :nowTime >= b.startDate " +
                 "ORDER BY b.startDate DESC")
@@ -56,8 +59,9 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
                  "WHERE b.user_id = :userId AND b.item_id= :itemId " +
                  "AND b.status = 'APPROVED' AND b.start_time<= :timeNow", nativeQuery = true)
          int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("timeNow") LocalDateTime timeNow);*/
-        @Query(value = "SELECT count (DISTINCT b.booker.id) FROM Booking b" +
-                " WHERE b.booker.id =:userId AND b.item.id=:itemId AND b.status='APPROVED' AND b.startDate<= :timeNow")
-        int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("timeNow") LocalDateTime timeNow);
+        @Query("SELECT count (b.id) FROM Booking b" +
+                " WHERE b.booker.id =:userId AND b.item.id=:itemId AND b.status=:status AND b.startDate<:timeNow ")
+        int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("status") BookingStatus status,
+                      @Param("timeNow") LocalDateTime timeNow);
 
 }

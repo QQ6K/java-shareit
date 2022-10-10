@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.CommentsRepository;
@@ -37,9 +38,12 @@ public class ItemServiceImpl implements ItemService {
     private final BookingsRepository bookingsRepository;
 
     @Override
-    public Item readById(Long itemId) {
-        return itemRepository.findById(itemId)
+    public ItemDto readById(Long itemId, Long userId) {
+        Item item =  itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещь не найдена", "id", String.valueOf(itemId)));
+        List<Comment> comments = commentsRepository.findAllByItemId(itemId);
+        ItemDto itemDto = ItemMapper.toItemDto(item,comments);
+        return itemDto;
     }
 
     @Override
@@ -115,12 +119,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Comment addComment(Long itemId, long userId, String text) {
+        if (text.equals("")) {throw new BadRequestException("Пустой комментарий");}
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещи не существует",
                         "id", String.valueOf(itemId)));
         User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        if (bookingsRepository.usedCount(userId, itemId, LocalDateTime.now()) > 0) {
+        int l= bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
+        if (l > 0) {
             return commentsRepository.save(new Comment(0, text, item, user,
                     LocalDateTime.now()));
         } else {

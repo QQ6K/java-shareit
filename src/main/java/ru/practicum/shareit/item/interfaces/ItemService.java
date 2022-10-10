@@ -15,7 +15,7 @@ public interface ItemService {
 
     void deleteItem(Long itemId);
 
-    Item readById(Long itemId);
+    ItemDto readById(Long itemId, Long userId);
 
     Collection<Item> readAll(Long userId);
 

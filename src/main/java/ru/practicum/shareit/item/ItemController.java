@@ -20,8 +20,6 @@ import java.util.Optional;
 public class ItemController {
     private final ItemService itemService;
 
-    private final CommentsRepository commentsRepository;
-
     @PostMapping
     public Optional<Item> saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
                                   Long userId, @Valid @RequestBody ItemDto itemDto) {
@@ -43,9 +41,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item readById(@PathVariable long itemId) {
+    public ItemDto readById(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
         log.info("Запрос 'GET /items/{}'", itemId);
-        return itemService.readById(itemId);
+        return itemService.readById(itemId, userId);
     }
 
     @GetMapping
@@ -64,7 +62,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public Comment addComment(@PathVariable("itemId") Long itemId,
                                  @RequestHeader("X-Sharer-User-Id") long userId,
-                                 @RequestBody @Valid Comment text) {
-        return itemService.addComment(itemId, userId, text.getText());
+                                 @RequestBody @Valid Comment comment) {
+        return itemService.addComment(itemId, userId, comment.getText());
     }
 }

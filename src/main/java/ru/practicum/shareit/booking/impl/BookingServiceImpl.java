@@ -44,6 +44,10 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemsRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingDto.getItemId())));
+        if (userId.equals(item.getOwner().getId())) {
+            throw new CrudException("Пользователь не может бронировать свои вещи", "Пользователь",
+                    userId.toString());
+        }
         if (!item.getAvailable()) {
             throw new BadRequestException("Вещь занята id=" + item.getId());
         }
@@ -94,7 +98,7 @@ public class BookingServiceImpl implements BookingService {
                     return  bookingsRepository.findFuture(userId, LocalDateTime.now());
                 case PAST:
                     return bookingsRepository.findByBookerIdStatePast(userId,
-                            LocalDateTime.now());
+                            LocalDateTime.now(),BookingStatus.APPROVED);
                 case CURRENT:
                     return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now());
                 case REJECTED:
@@ -143,6 +147,8 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
                 new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingId)));
+        if (booking.getStatus().equals(BookingStatus.APPROVED)){
+            throw new BadRequestException("Несоответствие статуса бронирования" + userId);}
         if (approved.equals(true)) {
             booking.setStatus(BookingStatus.APPROVED);
         } else if (approved.equals(false)) {
@@ -151,6 +157,8 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemsRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingId)));
+        if (!item.getOwner().getId().equals(userId)){
+            throw new WrongUserException("Это бронирование недоступно для пользователя id=" + userId);}
         User user = usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
                 new CrudException("Пользователя не существует",
                         "id", String.valueOf(bookingId)));
