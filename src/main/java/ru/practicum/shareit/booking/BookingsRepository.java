@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.BookingStatus;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoBookingNodes;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public interface BookingsRepository extends JpaRepository<Booking, Long> {
         Collection<Booking> findBookingByBooker_IdOrderByStartDateDesc(Long id);
@@ -24,9 +28,9 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
                                                     @Param("nowTime") LocalDateTime nowTime,
                                                     @Param("status") BookingStatus status);
 
-        @Query("SELECT b FROM Booking b WHERE b.booker.id=:useId AND b.endDate >= :nowTime AND :nowTime >= b.startDate " +
+        @Query("SELECT b FROM Booking b WHERE b.booker.id=:userId AND b.endDate >= :nowTime AND :nowTime >= b.startDate " +
                 "ORDER BY b.startDate DESC")
-        Collection<Booking> findByBookerIdStateCurrent(@Param("useId") Long useId, @Param("nowTime") LocalDateTime nowTime);
+        Collection<Booking> findByBookerIdStateCurrent(@Param("userId") Long useId, @Param("nowTime") LocalDateTime nowTime);
 
         @Query(value = "SELECT b FROM Booking b WHERE b.booker.id =:userId AND " +
                 "b.startDate > :dateNow ORDER BY b.startDate DESC")
@@ -61,7 +65,21 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
          int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("timeNow") LocalDateTime timeNow);*/
         @Query("SELECT count (b.id) FROM Booking b" +
                 " WHERE b.booker.id =:userId AND b.item.id=:itemId AND b.status=:status AND b.startDate<:timeNow ")
-        int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("status") BookingStatus status,
+        int usedCount(@Param("userId") Long userId, @Param("itemId") Long itemId, @Param("status") BookingStatus status,
                       @Param("timeNow") LocalDateTime timeNow);
+
+        @Query("SELECT b FROM Booking b WHERE b.item.id =:itemId AND b.item.owner.id =:ownerId AND b.status =:status AND b.startDate >:timeNow ORDER BY b.startDate ASC")
+        List<Booking> findNextBooking(@Param("itemId") Long itemId, @Param("ownerId") Long ownerId,
+                                     @Param("status") BookingStatus status, @Param("timeNow") LocalDateTime timeNow);
+
+        @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.id =:itemId AND i.owner.id =:ownerId AND b.status =:status AND b.startDate >:timeNow ORDER BY b.endDate ASC")
+        List<Booking>  findLastBooking(@Param("itemId") Long itemId, @Param("ownerId") Long ownerId,
+                                @Param("status") BookingStatus status,@Param("timeNow") LocalDateTime timeNow);
+
+
+        @Query("SELECT b FROM Booking b WHERE b.item.id=:itemId AND b.booker.id=:userId")
+        Booking  findTestBooking(@Param("itemId") Long itemId, @Param("userId") Long userId);
+
+
 
 }

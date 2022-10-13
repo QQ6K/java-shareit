@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.CommentsRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.ItemsRepository;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.interfaces.ItemService;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -19,10 +19,7 @@ import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +33,34 @@ public class ItemServiceImpl implements ItemService {
     private final CommentsRepository commentsRepository;
 
     private final BookingsRepository bookingsRepository;
-
+    @Transactional
     @Override
     public ItemDto readById(Long itemId, Long userId) {
-        Item item =  itemRepository.findById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещь не найдена", "id", String.valueOf(itemId)));
         List<Comment> comments = commentsRepository.findAllByItemId(itemId);
-        ItemDto itemDto = ItemMapper.toItemDto(item,comments);
+        List<CommentDto> commentDtos = new ArrayList<>(Collections.emptyList());
+        if (!comments.isEmpty()) {
+            for (Comment comment: comments){
+                CommentDto commentDto1 = CommentMapper.toDto(comment);
+                commentDtos.add(commentDto1);
+            }
+          //  comments.forEach(comment -> commentDto.add(CommentMapper.toDto(comment)));
+        } else {
+            comments = Collections.emptyList();
+        }
+//        Booking bookingTest = bookingsRepository.findTestBooking(itemId, userId);
+        List<Booking> bookingLast = bookingsRepository.findLastBooking(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
+        List<Booking> bookingNext = bookingsRepository.findNextBooking(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
+        ItemDtoBookingNodes itemDtoBookingNodesLast;
+        ItemDtoBookingNodes itemDtoBookingNodesNext;
+        if (!bookingNext.isEmpty()) {
+            itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingLast.get(0).getId());
+        } else itemDtoBookingNodesNext = null;
+        if (!bookingLast.isEmpty()) {
+            itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId());
+        } else itemDtoBookingNodesLast = null;
+        ItemDto itemDto = ItemMapper.toItemDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
         return itemDto;
     }
 

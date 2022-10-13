@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -24,5 +25,7 @@ public class ItemDto {
     private Boolean available;
     private User owner;
     String request_id;
-    private Collection<Comment> comments;
+    private Collection<CommentDto> comments;
+    private ItemDtoBookingNodes lastBooking;
+    private ItemDtoBookingNodes nextBooking;
 }
