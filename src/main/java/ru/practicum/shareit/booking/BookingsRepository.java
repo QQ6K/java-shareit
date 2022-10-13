@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingsRepository extends JpaRepository<Booking, Long> {
+
+
         Collection<Booking> findBookingByBooker_IdOrderByStartDateDesc(Long id);
 
         Collection<Booking> findByBooker_IdAndStatus(long id, BookingStatus status);
@@ -68,14 +70,23 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
         int usedCount(@Param("userId") Long userId, @Param("itemId") Long itemId, @Param("status") BookingStatus status,
                       @Param("timeNow") LocalDateTime timeNow);
 
-        @Query("SELECT b FROM Booking b WHERE b.item.id =:itemId AND b.item.owner.id =:ownerId AND b.status =:status AND b.startDate >:timeNow ORDER BY b.startDate ASC")
+        @Query("SELECT b FROM Booking b WHERE b.item.id =:itemId AND b.item.owner.id =:ownerId AND b.status =:status AND b.startDate>:timeNow ORDER BY b.startDate ASC")
         List<Booking> findNextBooking(@Param("itemId") Long itemId, @Param("ownerId") Long ownerId,
                                      @Param("status") BookingStatus status, @Param("timeNow") LocalDateTime timeNow);
 
-        @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.id =:itemId AND i.owner.id =:ownerId AND b.status =:status AND b.startDate >:timeNow ORDER BY b.endDate ASC")
+        @Query("SELECT b FROM Booking b WHERE b.item.id =:itemId AND b.item.owner.id =:ownerId AND b.status =:status AND b.endDate<:timeNow ORDER BY b.endDate DESC")
         List<Booking>  findLastBooking(@Param("itemId") Long itemId, @Param("ownerId") Long ownerId,
                                 @Param("status") BookingStatus status,@Param("timeNow") LocalDateTime timeNow);
 
+        @Query("SELECT b FROM Booking b WHERE b.item.owner.id =:ownerId AND b.status =:status AND b.startDate>:timeNow ORDER BY b.startDate ASC")
+        List<Booking> findNextBookingItemUser(@Param("ownerId") Long ownerId,
+                                      @Param("status") BookingStatus status,
+                                      @Param("timeNow") LocalDateTime timeNow);
+
+        @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.owner.id =:ownerId AND b.status =:status AND b.startDate>:timeNow ORDER BY b.endDate ASC")
+        List<Booking>  findLastBookingItemUser(@Param("ownerId") Long ownerId,
+                                       @Param("status") BookingStatus status,
+                                       @Param("timeNow") LocalDateTime timeNow);
 
         @Query("SELECT b FROM Booking b WHERE b.item.id=:itemId AND b.booker.id=:userId")
         Booking  findTestBooking(@Param("itemId") Long itemId, @Param("userId") Long userId);

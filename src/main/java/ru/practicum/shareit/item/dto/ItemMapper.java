@@ -32,4 +32,20 @@ public class ItemMapper {
                 itemDto.getRequest_id());
 
     }
+
+    public static ItemDtoShort toItemDtoShort(Item item,
+                                    ItemDtoBookingNodes lastBooking,
+                                    ItemDtoBookingNodes nextBooking) {
+        ItemDtoShort itemDtoShort = new ItemDtoShort();
+        itemDtoShort.setId(item.getId());
+        itemDtoShort.setName(item.getName());
+        itemDtoShort.setDescription(item.getDescription());
+        itemDtoShort.setAvailable(item.getAvailable());
+        itemDtoShort.setLastBooking(lastBooking);
+        itemDtoShort.setNextBooking(nextBooking);
+        return itemDtoShort;
+    }
+
+
+
 }

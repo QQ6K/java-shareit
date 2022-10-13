@@ -54,23 +54,45 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookingNext = bookingsRepository.findNextBooking(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
         ItemDtoBookingNodes itemDtoBookingNodesLast;
         ItemDtoBookingNodes itemDtoBookingNodesNext;
+
+        Collection<Booking> itemDtoBookingNodes = bookingsRepository.findAll();
+
         if (!bookingNext.isEmpty()) {
-            itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingLast.get(0).getId());
+            itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingNext.get(0).getId(),bookingNext.get(0).getBooker().getId());
         } else itemDtoBookingNodesNext = null;
         if (!bookingLast.isEmpty()) {
-            itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId());
+            itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(),bookingLast.get(0).getBooker().getId());
         } else itemDtoBookingNodesLast = null;
         ItemDto itemDto = ItemMapper.toItemDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
         return itemDto;
     }
 
     @Override
-    public Collection<Item> readAll(Long userId) {
+    public Collection<ItemDtoShort> readAll(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        return itemRepository.findAll().stream()
+        Collection<Booking> itemDtoBookingNodes = bookingsRepository.findAll();
+        List<Item> items = itemRepository.findAll().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
+        List<ItemDtoShort> resultItems = new ArrayList<>(Collections.emptyList());
+        for (Item item: items) {
+            List<Booking> bookingLast = bookingsRepository.findLastBooking(item.getId(), userId, BookingStatus.APPROVED, LocalDateTime.now());
+            List<Booking> bookingNext = bookingsRepository.findNextBooking(item.getId(), userId, BookingStatus.APPROVED, LocalDateTime.now());
+            ItemDtoBookingNodes itemDtoBookingNodesLast;
+            ItemDtoBookingNodes itemDtoBookingNodesNext;
+            if (!bookingNext.isEmpty()) {
+                itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingNext.get(0).getId(), bookingNext.get(0).getBooker().getId());
+            } else itemDtoBookingNodesNext = null;
+            if (!bookingLast.isEmpty()) {
+                itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(), bookingLast.get(0).getBooker().getId());
+            } else itemDtoBookingNodesLast = null;
+
+            ItemDtoShort itemDtoShort = ItemMapper.toItemDtoShort(item, itemDtoBookingNodesLast,itemDtoBookingNodesNext);
+            resultItems.add(itemDtoShort);
+        }
+           // items.forEach(item -> resultItems.add(CommentMapper.toDto(item)));
+        return resultItems;
     }
 
     @Override

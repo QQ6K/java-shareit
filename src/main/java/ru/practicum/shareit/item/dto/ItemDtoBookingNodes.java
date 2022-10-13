@@ -9,4 +9,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ItemDtoBookingNodes {
     Long id;
+    Long bookerId;
 }
