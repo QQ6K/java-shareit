@@ -27,9 +27,10 @@ public class ItemMapper {
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
                 itemDto.getOwner(),
-                itemDto.getRequest_id());
+                itemDto.getRequestId());
 
     }
+
     public static ItemDtoShort toItemDtoShort(Item item,
                                     ItemDtoBookingNodes lastBooking,
                                     ItemDtoBookingNodes nextBooking) {

@@ -33,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentsRepository commentsRepository;
 
     private final BookingsRepository bookingsRepository;
+
     @Transactional
     @Override
     public ItemDto readById(Long itemId, Long userId) {
@@ -41,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
         List<Comment> comments = commentsRepository.findAllByItemId(itemId);
         List<CommentDto> commentDtos = new ArrayList<>(Collections.emptyList());
         if (!comments.isEmpty()) {
-            for (Comment comment: comments){
+            for (Comment comment: comments) {
                 CommentDto commentDto1 = CommentMapper.toDto(comment);
                 commentDtos.add(commentDto1);
             }
@@ -156,17 +157,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Comment addComment(Long itemId, long userId, String text) {
-        if (text.equals("")) {throw new BadRequestException("Пустой комментарий");}
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new CrudException("Вещи не существует",
-                        "id", String.valueOf(itemId)));
-        User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
-                "id", String.valueOf(userId)));
-        int l= bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
+        if (text.equals("")) {
+            throw new BadRequestException("Пустой комментарий");
+        }
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new CrudException("Вещи не существует", "id", String.valueOf(itemId)));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует", "id", String.valueOf(userId)));
+        int l = bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (l > 0) {
             log.info("Пользователь id = {}. Вещь = {}. Сохранение комментария: {}", itemId, userId, text);
-            return commentsRepository.save(new Comment(0, text, item, user,
-                    LocalDateTime.now()));
+            return commentsRepository.save(new Comment(0, text, item, user, LocalDateTime.now()));
         } else {
             throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
         }

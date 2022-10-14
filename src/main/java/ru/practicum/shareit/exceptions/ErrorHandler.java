@@ -16,23 +16,25 @@ import java.util.Objects;
 public class ErrorHandler {
     @ExceptionHandler({WrongUserException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> StateException(WrongUserException e) {
+    public Map<String, String> wrongException(WrongUserException e) {
         log.error(e.getMessage());
         return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler({StateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> StateException(StateException e) {
+    public Map<String, String> stateException(StateException e) {
         log.error(e.getMessage());
         return Map.of("error", e.getMessage());
     }
+
     @ExceptionHandler({BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> NotAvailableException(BadRequestException e) {
+    public Map<String, String> notAvailableException(BadRequestException e) {
         log.error(e.getMessage());
         return Map.of("Ошибка:", e.getMessage());
     }
+
     @ExceptionHandler({CrudException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> userValidException(CrudException e) {

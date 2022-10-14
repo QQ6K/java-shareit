@@ -22,5 +22,6 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-    private String request_id;
+    @JoinColumn(name = "request_id")
+    private String requestId;
 }

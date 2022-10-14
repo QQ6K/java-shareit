@@ -88,8 +88,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования пользователя id: {}", userId);
-        }
-        catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
             switch (bookingState) {
@@ -118,10 +117,9 @@ public class BookingServiceImpl implements BookingService {
         try {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования владельца id: {}", userId);
-        }
-            catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
                 throw new StateException("Unknown state: UNSUPPORTED_STATUS");
-            }
+                }
             switch (bookingState) {
                 case ALL:
                     return bookingsRepository.findOwnerAll(userId);
@@ -150,8 +148,9 @@ public class BookingServiceImpl implements BookingService {
         usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
                 new CrudException("Пользователя не существует",
                         "id", String.valueOf(bookingId)));
-        if (booking.getStatus().equals(BookingStatus.APPROVED)){
-            throw new BadRequestException("Несоответствие статуса бронирования" + userId);}
+        if (booking.getStatus().equals(BookingStatus.APPROVED)) {
+            throw new BadRequestException("Несоответствие статуса бронирования" + userId);
+        }
         if (approved.equals(true)) {
             booking.setStatus(BookingStatus.APPROVED);
         } else if (approved.equals(false)) {
@@ -160,8 +159,9 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemsRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new CrudException("Вещи не существует",
                         "id", String.valueOf(bookingId)));
-        if (!item.getOwner().getId().equals(userId)){
-            throw new WrongUserException("Это бронирование недоступно для пользователя id=" + userId);}
+        if (!item.getOwner().getId().equals(userId)) {
+            throw new WrongUserException("Это бронирование недоступно для пользователя id=" + userId);
+        }
         log.info("Изменение статуса бронирования  id: {}", booking.getId());
         return bookingsRepository.save(booking);
     }
