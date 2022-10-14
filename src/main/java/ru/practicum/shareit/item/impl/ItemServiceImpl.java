@@ -45,18 +45,11 @@ public class ItemServiceImpl implements ItemService {
                 CommentDto commentDto1 = CommentMapper.toDto(comment);
                 commentDtos.add(commentDto1);
             }
-          //  comments.forEach(comment -> commentDto.add(CommentMapper.toDto(comment)));
-        } else {
-            comments = Collections.emptyList();
         }
-//        Booking bookingTest = bookingsRepository.findTestBooking(itemId, userId);
         List<Booking> bookingLast = bookingsRepository.findLastBooking(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
         List<Booking> bookingNext = bookingsRepository.findNextBooking(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
         ItemDtoBookingNodes itemDtoBookingNodesLast;
         ItemDtoBookingNodes itemDtoBookingNodesNext;
-
-        Collection<Booking> itemDtoBookingNodes = bookingsRepository.findAll();
-
         if (!bookingNext.isEmpty()) {
             itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingNext.get(0).getId(),bookingNext.get(0).getBooker().getId());
         } else itemDtoBookingNodesNext = null;
@@ -64,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
             itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(),bookingLast.get(0).getBooker().getId());
         } else itemDtoBookingNodesLast = null;
         ItemDto itemDto = ItemMapper.toItemDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
+        log.info("Просмотр вещи  id = {} пользователем id = {}", itemDto, userId);
         return itemDto;
     }
 
@@ -71,7 +65,6 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDtoShort> readAll(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        Collection<Booking> itemDtoBookingNodes = bookingsRepository.findAll();
         List<Item> items = itemRepository.findAll().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
@@ -91,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
             ItemDtoShort itemDtoShort = ItemMapper.toItemDtoShort(item, itemDtoBookingNodesLast,itemDtoBookingNodesNext);
             resultItems.add(itemDtoShort);
         }
-           // items.forEach(item -> resultItems.add(CommentMapper.toDto(item)));
+        log.info("Просмотр вещей пользователем id = {}", userId);
         return resultItems;
     }
 
@@ -128,6 +121,7 @@ public class ItemServiceImpl implements ItemService {
             updateItem.setAvailable(itemDto.getAvailable());
         }
         itemRepository.save(updateItem);
+        log.info("Просмотр вещей пользователем id = {}", userId);
         return itemRepository.findById(itemId);
     }
 
@@ -144,7 +138,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchText(String text) {
-        //TODO:log
         List<Item> searchResult;
         if (!text.isEmpty()) {
             searchResult = itemRepository.findAll().stream()
@@ -152,8 +145,12 @@ public class ItemServiceImpl implements ItemService {
                     .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
                             || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                     .collect(Collectors.toList());
+            log.info("Поиск текста: {}", text);
             return searchResult;
-        } else return Collections.emptyList();
+        } else {
+            log.info("Пустой результат поиска текста: {}", text);
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -167,10 +164,13 @@ public class ItemServiceImpl implements ItemService {
                 "id", String.valueOf(userId)));
         int l= bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (l > 0) {
+            log.info("Пользователь id = {}. Вещь = {}. Сохранение комментария: {}", itemId, userId, text);
             return commentsRepository.save(new Comment(0, text, item, user,
                     LocalDateTime.now()));
         } else {
             throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
         }
     }
+
+
 }

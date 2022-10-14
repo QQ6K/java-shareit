@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +86,9 @@ public class BookingServiceImpl implements BookingService {
                 "id", String.valueOf(userId)));
         BookingState bookingState;
         try {
-            bookingState = BookingState.valueOf(state);}
+            bookingState = BookingState.valueOf(state);
+            log.info("Просмотр бронирования пользователя id: {}", userId);
+        }
         catch (IllegalArgumentException e){
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
@@ -116,6 +117,7 @@ public class BookingServiceImpl implements BookingService {
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
+            log.info("Просмотр бронирования владельца id: {}", userId);
         }
             catch (IllegalArgumentException e) {
                 throw new StateException("Unknown state: UNSUPPORTED_STATUS");
@@ -142,10 +144,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public Booking updateBooking(Long userId, Long bookingId, Boolean approved) {
-        Collection<Booking> bookings = bookingsRepository.findAll().stream()
-                .collect(Collectors.toList());
         Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
                 new CrudException("Вещи не существует",
+                        "id", String.valueOf(bookingId)));
+        usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
+                new CrudException("Пользователя не существует",
                         "id", String.valueOf(bookingId)));
         if (booking.getStatus().equals(BookingStatus.APPROVED)){
             throw new BadRequestException("Несоответствие статуса бронирования" + userId);}
@@ -159,12 +162,7 @@ public class BookingServiceImpl implements BookingService {
                         "id", String.valueOf(bookingId)));
         if (!item.getOwner().getId().equals(userId)){
             throw new WrongUserException("Это бронирование недоступно для пользователя id=" + userId);}
-        User user = usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
-                new CrudException("Пользователя не существует",
-                        "id", String.valueOf(bookingId)));
         log.info("Изменение статуса бронирования  id: {}", booking.getId());
-        bookings = bookingsRepository.findAll().stream()
-                .collect(Collectors.toList());
         return bookingsRepository.save(booking);
     }
 

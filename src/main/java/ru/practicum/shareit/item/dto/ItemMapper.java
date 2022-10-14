@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item,
@@ -32,7 +30,6 @@ public class ItemMapper {
                 itemDto.getRequest_id());
 
     }
-
     public static ItemDtoShort toItemDtoShort(Item item,
                                     ItemDtoBookingNodes lastBooking,
                                     ItemDtoBookingNodes nextBooking) {

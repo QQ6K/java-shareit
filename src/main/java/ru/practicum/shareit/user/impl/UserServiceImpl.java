@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
         } catch (DataIntegrityViolationException e) {
             throw new EmailConflictException("Пользователь с таким email уже существует", "email", userDto.getEmail());
         }
+        log.info("Создание пользователя id = {}", userDto.getId());
         return userRepository.findById(user.getId());
     }
 

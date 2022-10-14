@@ -13,6 +13,5 @@ public class BookingMapper {
                 booker,
                 item,
                 booking.getStatus());
-
     }
 }

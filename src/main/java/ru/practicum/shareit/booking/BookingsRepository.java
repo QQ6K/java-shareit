@@ -5,13 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoBookingNodes;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public interface BookingsRepository extends JpaRepository<Booking, Long> {
 
@@ -61,10 +58,6 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
         @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.owner.id = :userId AND b.endDate< :timeNow")
         Collection<Booking> findOwnerPast(@Param("userId") Long userId, @Param("timeNow") LocalDateTime timeNow);
 
-        /* @Query(value = "SELECT COUNT(DISTINCT b.user_id) FROM Booking b " +
-                 "WHERE b.user_id = :userId AND b.item_id= :itemId " +
-                 "AND b.status = 'APPROVED' AND b.start_time<= :timeNow", nativeQuery = true)
-         int usedCount(@Param("userId") long userId, @Param("itemId") long itemId, @Param("timeNow") LocalDateTime timeNow);*/
         @Query("SELECT count (b.id) FROM Booking b" +
                 " WHERE b.booker.id =:userId AND b.item.id=:itemId AND b.status=:status AND b.startDate<:timeNow ")
         int usedCount(@Param("userId") Long userId, @Param("itemId") Long itemId, @Param("status") BookingStatus status,

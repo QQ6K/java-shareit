@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.model.Booking;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.websocket.server.PathParam;
 import java.util.Collection;
 
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class BookingController {
                                            @RequestHeader("X-Sharer-User-Id")
                                            @NotNull(message = "Отсутсвует X-Sharer-User-Id")
                                            Long userId) {
-        log.info("Запрос 'GET /items' пользователя " + userId);
+        log.info("Запрос 'GET /bookings' пользователя " + userId);
         return bookingService.readAllUser(userId, state);
     }
 
@@ -58,7 +57,7 @@ public class BookingController {
                                             @NotNull(message = "Отсутсвует X-Sharer-User-Id")
                                             Long userId,
                                             @RequestParam(defaultValue = "ALL", name = "state") String state) {
-        log.info("Запрос 'GET /items' пользователя " + userId);
+        log.info("Запрос 'GET /bookings/owner' пользователя " + userId);
         return bookingService.readAllOwner(userId, state);
     }
 
