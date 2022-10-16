@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class ItemDtoBookingNodes {
-    Long id;
-    Long bookerId;
+    private Long id;
+    private Long bookerId;
 }

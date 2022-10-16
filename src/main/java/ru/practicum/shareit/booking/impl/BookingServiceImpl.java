@@ -91,22 +91,23 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
-            switch (bookingState) {
-                case ALL:
-                    return  bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId);
-                case FUTURE:
-                    return  bookingsRepository.findFuture(userId, LocalDateTime.now());
-                case PAST:
-                    return bookingsRepository.findByBookerIdStatePast(userId,
-                            LocalDateTime.now(),BookingStatus.APPROVED);
-                case CURRENT:
-                    return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now());
-                case REJECTED:
-                    return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
-                case WAITING:
-                    return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
-                default: throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
-            }
+        switch (bookingState) {
+            case ALL:
+                return bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId);
+            case FUTURE:
+                return bookingsRepository.findFuture(userId, LocalDateTime.now());
+            case PAST:
+                return bookingsRepository.findByBookerIdStatePast(userId,
+                        LocalDateTime.now(), BookingStatus.APPROVED);
+            case CURRENT:
+                return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now());
+            case REJECTED:
+                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+            case WAITING:
+                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
+            default:
+                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+        }
     }
 
     @Override
@@ -118,24 +119,25 @@ public class BookingServiceImpl implements BookingService {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования владельца id: {}", userId);
         } catch (IllegalArgumentException e) {
+            throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        switch (bookingState) {
+            case ALL:
+                return bookingsRepository.findOwnerAll(userId);
+            case FUTURE:
+                return bookingsRepository.findOwnerFuture(userId, LocalDateTime.now());
+            case PAST:
+                return bookingsRepository.findOwnerPast(userId,
+                        LocalDateTime.now());
+            case CURRENT:
+                return bookingsRepository.findOwnerCurrent(userId,
+                        LocalDateTime.now());
+            case REJECTED:
+                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.REJECTED);
+            case WAITING:
+                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING);
+            default:
                 throw new StateException("Unknown state: UNSUPPORTED_STATUS");
-                }
-            switch (bookingState) {
-                case ALL:
-                    return bookingsRepository.findOwnerAll(userId);
-                case FUTURE:
-                    return bookingsRepository.findOwnerFuture(userId, LocalDateTime.now());
-                case PAST:
-                    return bookingsRepository.findOwnerPast(userId,
-                            LocalDateTime.now());
-                case CURRENT:
-                    return bookingsRepository.findOwnerCurrent(userId,
-                            LocalDateTime.now());
-                case REJECTED:
-                    return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.REJECTED);
-                case WAITING:
-                    return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING);
-                default:throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
 

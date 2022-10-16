@@ -1,5 +1,5 @@
 drop table if exists users;
-drop table if exists item;
+drop table if exists items;
 drop table if exists item_requests;
 drop table if exists bookings;
 drop table if exists comments;
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS items (
     description VARCHAR(4000) NOT NULL,
     owner_id BIGINT NOT NULL,
     available BOOLEAN NOT NULL,
-    request_id VARCHAR(255),
+    request_id BIGINT,
     CONSTRAINT pk_item PRIMARY KEY (id),
     CONSTRAINT fk_items_owner_id FOREIGN KEY (owner_id) REFERENCES users (id),
     CONSTRAINT fk_items_request_id FOREIGN KEY (request_id) REFERENCES item_requests (id)
