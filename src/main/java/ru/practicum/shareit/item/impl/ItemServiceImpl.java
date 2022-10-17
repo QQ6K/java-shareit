@@ -34,7 +34,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final BookingsRepository bookingsRepository;
 
-    @Transactional
     @Override
     public ItemDto readById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
