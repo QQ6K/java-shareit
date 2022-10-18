@@ -17,7 +17,6 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
-    private Long requestorId;
     private Long requesterId;
     private LocalDateTime created;
 }
