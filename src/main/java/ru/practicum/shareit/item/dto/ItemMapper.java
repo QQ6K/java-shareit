@@ -2,15 +2,22 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.List;
+
 public class ItemMapper {
-    public static ItemDto toDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getOwner(),
-                item.getRequest());
+    public static ItemDto toItemDto(Item item,
+                                    List<CommentDto> commentsDto,
+                                    ItemDtoBookingNodes lastBooking,
+                                    ItemDtoBookingNodes nextBooking) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setComments(commentsDto);
+        itemDto.setLastBooking(lastBooking);
+        itemDto.setNextBooking(nextBooking);
+        return itemDto;
     }
 
     public static Item fromDto(ItemDto itemDto) {
@@ -19,8 +26,23 @@ public class ItemMapper {
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                itemDto.getOwner(),
-                itemDto.getRequest());
+                itemDto.getOwner());
 
     }
+
+    public static ItemDtoShort toItemDtoShort(Item item,
+                                    ItemDtoBookingNodes lastBooking,
+                                    ItemDtoBookingNodes nextBooking) {
+        ItemDtoShort itemDtoShort = new ItemDtoShort();
+        itemDtoShort.setId(item.getId());
+        itemDtoShort.setName(item.getName());
+        itemDtoShort.setDescription(item.getDescription());
+        itemDtoShort.setAvailable(item.getAvailable());
+        itemDtoShort.setLastBooking(lastBooking);
+        itemDtoShort.setNextBooking(nextBooking);
+        return itemDtoShort;
+    }
+
+
+
 }
