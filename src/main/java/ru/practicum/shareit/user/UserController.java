@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.interfaces.UserService;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public Optional<User> addUser(@Valid @RequestBody UserDto userdto) {
+    public Optional<User> saveUser(@Valid @RequestBody UserDto userdto) {
         log.info("Запрос 'POST /users'");
         return userService.createUser(userdto);
     }
