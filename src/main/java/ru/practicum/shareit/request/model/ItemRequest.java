@@ -19,5 +19,6 @@ public class ItemRequest {
     private String description;
     private Long requestorId;
     private Long requesterId;
+    private Long test;
     private LocalDateTime created;
 }
