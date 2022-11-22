@@ -3,10 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentMapper;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoShort;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.interfaces.ItemService;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -24,7 +21,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public Optional<Item> saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
+    public OutputNewItemDto saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
                                   Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Запрос 'POST /items'");
         return itemService.createItem(userId, itemDto);

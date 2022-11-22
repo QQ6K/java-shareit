@@ -24,7 +24,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequest> getAllRequestsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> getAllRequestsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestServiceImpl.findAllItemRequestsByOwnerId(userId);
     }
 

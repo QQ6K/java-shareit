@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CrudException;
+import ru.practicum.shareit.item.ItemsRepository;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -19,6 +23,7 @@ import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +35,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final UsersRepository usersRepository;
     private final ItemRequestRepository itemRequestRepository;
+
+    private ItemsRepository itemsRepository;
 
 
     @Transactional
@@ -50,11 +57,20 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequest> findAllItemRequestsByOwnerId(Long requesterId) {
+    public List<ItemRequestDto> findAllItemRequestsByOwnerId(Long requesterId) {
         usersRepository.findById(requesterId)
                 .orElseThrow(() -> new CrudException("Пользователя не существует", "id", String.valueOf(requesterId)));
-        log.info("Получение запросов пользователем {}", requesterId);
-        return itemRequestRepository.findAllByRequesterId(requesterId);
+        List<ItemRequestDto> itemRequestsDto = new ArrayList<>();
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterId(requesterId);
+        itemRequests.forEach(itemRequest -> {
+            if (!itemRequest.getRequester().getId().equals(requesterId)) {
+                List<ItemRequest> items = itemRequestRepository.findAllByRequesterId(itemRequest.getRequester().getId());
+                List<ItemDto> itemsDto = new ArrayList<>();
+               // items.forEach(item -> itemsDto.add(ItemMapper.toItemDto(item)));
+                itemRequestsDto.add(ItemRequestMapper.toDto(itemRequest, itemsDto));
+            }
+    });
+        return itemRequestsDto;
     }
 
     @Override

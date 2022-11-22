@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.interfaces;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoShort;
+import ru.practicum.shareit.item.dto.OutputNewItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -20,7 +21,7 @@ public interface ItemService {
 
     Collection<ItemDtoShort> readAll(Long userId);
 
-    Optional<Item> createItem(Long userId, ItemDto itemDto);
+    OutputNewItemDto createItem(Long userId, ItemDto itemDto);
 
     List<Item> searchText(String text);
 

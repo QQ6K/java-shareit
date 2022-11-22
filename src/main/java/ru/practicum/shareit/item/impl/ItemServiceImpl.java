@@ -90,14 +90,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Optional<Item> createItem(Long userId, ItemDto itemDto) {
+    public OutputNewItemDto createItem(Long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
         itemRepository.save(item);
         log.info("Создание вещи  id: {}", item.getId());
-        return itemRepository.findById(item.getId());
+        return ItemMapper.toOutputNewItemDto(itemRepository.findById(item.getId()));
     }
 
     @Override
