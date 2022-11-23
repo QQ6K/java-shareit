@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.model.User;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class OutputNewItemDto {
+public class ItemOutDto {
     private Long id;
     private String name;
     private String description;

@@ -21,7 +21,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public OutputNewItemDto saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
+    public ItemOutDto saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
                                   Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Запрос 'POST /items'");
         return itemService.createItem(userId, itemDto);

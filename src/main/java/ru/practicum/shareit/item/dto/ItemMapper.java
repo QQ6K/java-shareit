@@ -8,7 +8,7 @@ import java.util.Optional;
 public class ItemMapper {
 
 
-    public static ItemDto toItemDto(Item item,
+    public static ItemDto toItemBookingDto(Item item,
                                     List<CommentDto> commentsDto,
                                     ItemDtoBookingNodes lastBooking,
                                     ItemDtoBookingNodes nextBooking) {
@@ -23,15 +23,26 @@ public class ItemMapper {
         return itemDto;
     }
 
+    public static ItemOutDto toItemOutDto(Item item) {
+        ItemOutDto itemOutDto = new ItemOutDto();
+        itemOutDto.setId(item.getId());
+        itemOutDto.setName(item.getName());
+        itemOutDto.setDescription(item.getDescription());
+        itemOutDto.setAvailable(item.getAvailable());
+        itemOutDto.setOwner(item.getOwner());
+        itemOutDto.setRequestId(item.getRequestId());
+        return itemOutDto;
+    }
+
     public static Item fromDto(ItemDto itemDto) {
         return new Item(
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                itemDto.getOwner()
+                itemDto.getOwner(),
+                itemDto.getRequestId()
                 );
-
     }
 
     public static ItemDtoShort toItemDtoShort(Item item,
@@ -46,17 +57,5 @@ public class ItemMapper {
         itemDtoShort.setNextBooking(nextBooking);
         return itemDtoShort;
     }
-
-    public static OutputNewItemDto toOutputNewItemDto(Optional<Item> item) {
-        OutputNewItemDto outputNewItemDto = new OutputNewItemDto();
-        outputNewItemDto.setId(item.get().getId());
-        outputNewItemDto.setName(item.get().getName());
-        outputNewItemDto.setDescription(item.get().getDescription());
-        outputNewItemDto.setAvailable(item.get().getAvailable());
-        outputNewItemDto.setRequestId(null);
-        return outputNewItemDto;
-    }
-
-
 
 }

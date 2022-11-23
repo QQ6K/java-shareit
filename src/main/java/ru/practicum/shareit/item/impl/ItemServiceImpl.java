@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
         if (!bookingLast.isEmpty()) {
             itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(),bookingLast.get(0).getBooker().getId());
         } else itemDtoBookingNodesLast = null;
-        ItemDto itemDto = ItemMapper.toItemDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
+        ItemDto itemDto = ItemMapper.toItemBookingDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
         log.info("Просмотр вещи  id = {} пользователем id = {}", itemDto, userId);
         return itemDto;
     }
@@ -90,14 +90,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public OutputNewItemDto createItem(Long userId, ItemDto itemDto) {
+    public ItemOutDto createItem(Long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
         itemRepository.save(item);
         log.info("Создание вещи  id: {}", item.getId());
-        return ItemMapper.toOutputNewItemDto(itemRepository.findById(item.getId()));
+        Optional<Item> itemReturn = itemRepository.findById(item.getId());
+        return ItemMapper.toItemOutDto(itemReturn.get());
     }
 
     @Override

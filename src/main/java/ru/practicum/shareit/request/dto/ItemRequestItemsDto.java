@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemOutDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,11 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemRequestDto {
+public class ItemRequestItemsDto {
     private Long id;
     private String description;
     @JsonProperty("requester_id")
     private Long requesterId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created;
+    private List<ItemOutDto> items;
 }
