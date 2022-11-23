@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDtoExport;
 import ru.practicum.shareit.booking.dto.BookingDtoImport;
@@ -47,18 +50,22 @@ public class BookingController {
     public Collection<Booking> readAllUser(@RequestParam(defaultValue = "ALL", name = "state") String state,
                                            @RequestHeader("X-Sharer-User-Id")
                                            @NotNull(message = "Отсутсвует X-Sharer-User-Id")
-                                           Long userId) {
+                                           Long userId,
+                                           @RequestParam(name = "from", required = false) int from,
+                                           @RequestParam(name = "size", required = false) int size) {
         log.info("Запрос 'GET /bookings' пользователя " + userId);
-        return bookingService.readAllUser(userId, state);
+        return bookingService.readAllUser(userId, state,from,size);
     }
 
     @GetMapping("/owner")
     public Collection<Booking> readAllOwner(@RequestHeader("X-Sharer-User-Id")
                                             @NotNull(message = "Отсутсвует X-Sharer-User-Id")
                                             Long userId,
-                                            @RequestParam(defaultValue = "ALL", name = "state") String state) {
+                                      @RequestParam(name = "from", required = false) int from,
+                                      @RequestParam(name = "size", required = false) int size,
+                                      @RequestParam(defaultValue = "ALL", name = "state") String state) {
         log.info("Запрос 'GET /bookings/owner' пользователя " + userId);
-        return bookingService.readAllOwner(userId, state);
+        return bookingService.readAllOwner(userId, state, size, from);
     }
 
 }

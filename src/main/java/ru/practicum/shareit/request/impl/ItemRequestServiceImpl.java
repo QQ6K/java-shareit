@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,12 +92,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestItemsDto> getAllItemRequests(Long userId, Integer from, Integer size) {
         usersRepository.findById(userId)
                 .orElseThrow(() -> new WrongUserException("Пользователя не существует id = "+ userId));
-       /* if (size = null || from = null) {
-       PageParam.createPageable(from, size, "created")
-            throw new BadRequestException("Переданы значения равные нулю или меньше");
-        }*/
-        PageRequest pageable = PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"));
-        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByRequesterIdIsNot(userId, pageable)
+        Pageable pageable;
+       if (size == null || from == null) {
+           pageable = Pageable.unpaged();
+        }
+       else if (size <= 0 || from < 0){
+           throw new BadRequestException("Ошибка параметров пагинации");
+       } else {
+
+           pageable = PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"));
+       }
+        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByRequesterId(userId, pageable)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
         List<ItemRequestItemsDto> itemRequestItemsDtos = new ArrayList<>();
         for (ItemRequestDto itemRequestDto: itemRequests){
