@@ -99,14 +99,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
        else if (size <= 0 || from < 0){
            throw new BadRequestException("Ошибка параметров пагинации");
        } else {
-
-           pageable = PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"));
+           int page = from / size;
+           pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created"));
        }
-        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByRequesterId(userId, pageable)
+        List<Item> allIR = itemsRepository.findAll();
+       List<ItemRequest> all = itemRequestRepository.findAll();
+        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByNotRequesterId(userId, pageable)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
         List<ItemRequestItemsDto> itemRequestItemsDtos = new ArrayList<>();
         for (ItemRequestDto itemRequestDto: itemRequests){
-            List<Item> all = itemsRepository.findAll();
             List<ItemOutDto> itemDtos = itemsRepository
                     .findAllByRequestId(itemRequestDto.getId())
                     .stream().map(ItemMapper::toItemOutDto).collect(Collectors.toList());
@@ -115,7 +116,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     ItemRequestMapper.toDtoItems(ItemRequestMapper.toRequest(itemRequestDto, user),itemDtos);
             itemRequestItemsDtos.add(itemRequestItemDto);
         }
-
         return itemRequestItemsDtos;
     }
 }

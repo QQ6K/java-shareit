@@ -16,7 +16,7 @@ public interface BookingService {
 
     Collection<Booking> readAllUser(Long userId, String state, Integer from, Integer size);
 
-    Collection<Booking> readAllOwner(Long userId, String state, Integer size, Integer from);
+    Collection<Booking> readAllOwner(Long userId, String state, Integer from, Integer size);
 
     Booking updateBooking(Long userId, Long bookingId, Boolean approved);
 

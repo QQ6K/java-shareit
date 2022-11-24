@@ -47,25 +47,24 @@ public class BookingController {
     }
 
     @GetMapping
-    public Collection<Booking> readAllUser(@RequestParam(defaultValue = "ALL", name = "state") String state,
-                                           @RequestHeader("X-Sharer-User-Id")
-                                           @NotNull(message = "Отсутсвует X-Sharer-User-Id")
-                                           Long userId,
-                                           @RequestParam(name = "from", required = false) int from,
-                                           @RequestParam(name = "size", required = false) int size) {
+    public Collection<Booking> readAllUser(@RequestHeader("X-Sharer-User-Id")
+                                           @NotNull(message = "Отсутсвует X-Sharer-User-Id") Long userId,
+                                           @RequestParam(name = "state", required = false) String state,
+                                           @RequestParam(name = "from", required = false) Integer from,
+                                           @RequestParam(name = "size", required = false) Integer size) {
         log.info("Запрос 'GET /bookings' пользователя " + userId);
         return bookingService.readAllUser(userId, state,from,size);
     }
 
     @GetMapping("/owner")
     public Collection<Booking> readAllOwner(@RequestHeader("X-Sharer-User-Id")
-                                            @NotNull(message = "Отсутсвует X-Sharer-User-Id")
-                                            Long userId,
-                                      @RequestParam(name = "from", required = false) int from,
-                                      @RequestParam(name = "size", required = false) int size,
-                                      @RequestParam(defaultValue = "ALL", name = "state") String state) {
+                                            @NotNull(message = "Отсутсвует X-Sharer-User-Id") Long userId,
+                                            @RequestParam(name = "state", required = false) String state,
+                                            @RequestParam(name = "from", required = false) Integer from,
+                                            @RequestParam(name = "size", required = false) Integer size
+                                            ) {
         log.info("Запрос 'GET /bookings/owner' пользователя " + userId);
-        return bookingService.readAllOwner(userId, state, size, from);
+        return bookingService.readAllOwner(userId, state, from, size);
     }
 
 }

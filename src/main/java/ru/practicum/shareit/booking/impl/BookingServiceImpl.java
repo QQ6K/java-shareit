@@ -91,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
     public Collection<Booking> readAllUser(Long userId, String state, Integer from, Integer size) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
+        if (state==null) {state="ALL";}
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -98,17 +99,17 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
-      /*Pageable pageable;
+      Pageable pageable;
         if (size == null || from == null) {
             pageable = Pageable.unpaged();
         }
         else if (size <= 0 || from < 0){
             throw new BadRequestException("Ошибка параметров пагинации");
         } else {
+            int page = from / size;
+            pageable = PageRequest.of(page, size);
+        }
 
-            pageable = PageRequest.of(from, size);
-        }*/
-        Pageable pageable = PageRequest.of(from, size);
         switch (bookingState) {
             case ALL:
                 return bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId, pageable).getContent();
@@ -133,7 +134,16 @@ public class BookingServiceImpl implements BookingService {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         BookingState bookingState;
-        Pageable pageable = PageRequest.of(from, size);
+        if (state==null) {state="ALL";}
+        Pageable pageable;
+        if (size == null || from == null) {
+            pageable = Pageable.unpaged();
+        }
+        else if (size < 0 || from < 0){
+            throw new BadRequestException("Ошибка параметров пагинации");
+        } else {
+            int page = from / size;
+            pageable = PageRequest.of(page, size);}
 
         try {
             bookingState = BookingState.valueOf(state);
@@ -141,8 +151,6 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
-
-        List<Booking> resultBookings = new ArrayList<>();
 
         switch (bookingState) {
             case ALL:
