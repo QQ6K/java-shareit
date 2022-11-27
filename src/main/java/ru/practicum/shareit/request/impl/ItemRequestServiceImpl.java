@@ -13,7 +13,6 @@ import ru.practicum.shareit.exceptions.WrongUserException;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemOutDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestItemsDto;
@@ -34,6 +33,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
+
     private final UserService userService;
 
     private final UsersRepository usersRepository;
@@ -76,7 +76,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreatedAsc(ownId)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
         for (ItemRequestDto itemRequestDto: itemRequests){
-            List<Item> all = itemsRepository.findAll();
             List<ItemOutDto> itemDtos = itemsRepository
                     .findAllByRequestId(itemRequestDto.getId())
                     .stream().map(ItemMapper::toItemOutDto).collect(Collectors.toList());
@@ -102,12 +101,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
            int page = from / size;
            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created"));
        }
-        List<Item> allIR = itemsRepository.findAll();
-       List<ItemRequest> all = itemRequestRepository.findAll();
-        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByNotRequesterId(userId, pageable)
+       List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByNotRequesterId(userId, pageable)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
-        List<ItemRequestItemsDto> itemRequestItemsDtos = new ArrayList<>();
-        for (ItemRequestDto itemRequestDto: itemRequests){
+       List<ItemRequestItemsDto> itemRequestItemsDtos = new ArrayList<>();
+       for (ItemRequestDto itemRequestDto: itemRequests){
             List<ItemOutDto> itemDtos = itemsRepository
                     .findAllByRequestId(itemRequestDto.getId())
                     .stream().map(ItemMapper::toItemOutDto).collect(Collectors.toList());

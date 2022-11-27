@@ -27,13 +27,13 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public Optional<User> patchUser(@Valid @PathVariable long userId, @RequestBody UserDto userdto) {
+    public Optional<User> patchUser(@PathVariable @Valid long userId, @RequestBody UserDto userdto) {
         log.info("Запрос 'PATCH /users/{}'", userId);
         return userService.updateUser(userId, userdto);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable long userId) throws CrudException {
+    public void deleteUser(@PathVariable Long userId) throws CrudException {
         log.info("Запрос 'DELETE /users/{}'", userId);
         userService.deleteUser(userId);
     }

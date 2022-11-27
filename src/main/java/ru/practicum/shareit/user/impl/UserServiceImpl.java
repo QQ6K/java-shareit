@@ -18,8 +18,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UsersRepository userRepository;
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long userId) {
+    public void deleteUser(Long userId) {
         if (userRepository.findById(userId).isPresent()) {
             userRepository.deleteById(userId);
             log.info("Удален  пользователь  id: {}", userId);

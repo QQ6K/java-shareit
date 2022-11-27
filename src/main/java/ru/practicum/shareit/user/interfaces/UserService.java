@@ -15,7 +15,7 @@ public interface UserService {
 
     Optional<User> updateUser(long userId, UserDto userDto);
 
-    void deleteUser(long userId);
+    void deleteUser(Long userId);
 
     Collection<User> readAll();
 }

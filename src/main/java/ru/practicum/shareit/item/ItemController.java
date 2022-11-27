@@ -1,19 +1,21 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.interfaces.ItemService;
-import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoShort;
+import ru.practicum.shareit.item.dto.ItemOutDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -35,7 +37,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{itemId}")
-    public void deleteUser(@PathVariable long itemId) {
+    public void deleteItem(@PathVariable long itemId) {
         log.info("Запрос 'DELETE /items/{}'", itemId);
         itemService.deleteItem(itemId);
     }
@@ -63,7 +65,6 @@ public class ItemController {
     public CommentDto addComment(@PathVariable("itemId") Long itemId,
                                  @RequestHeader("X-Sharer-User-Id") long userId,
                                  @RequestBody @Valid CommentDto commentDto) {
-        Comment comment = itemService.addComment(itemId, userId, commentDto.getText());
-        return CommentMapper.toDto(comment);
+        return itemService.addComment(itemId, userId, commentDto.getText());
     }
 }

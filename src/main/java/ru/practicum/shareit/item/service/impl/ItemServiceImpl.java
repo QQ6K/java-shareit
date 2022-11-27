@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.impl;
+package ru.practicum.shareit.item.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.interfaces.ItemService;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UsersRepository;
@@ -156,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Comment addComment(Long itemId, long userId, String text) {
+    public CommentDto addComment(Long itemId, long userId, String text) {
         if (text.equals("")) {
             throw new BadRequestException("Пустой комментарий");
         }
@@ -165,7 +165,7 @@ public class ItemServiceImpl implements ItemService {
         int l = bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (l > 0) {
             log.info("Пользователь id = {}. Вещь = {}. Сохранение комментария: {}", itemId, userId, text);
-            return commentsRepository.save(new Comment(0, text, item, user, LocalDateTime.now()));
+            return CommentMapper.toDto(commentsRepository.save(new Comment(0, text, item, user, LocalDateTime.now())));
         } else {
             throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
         }
