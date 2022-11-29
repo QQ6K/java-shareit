@@ -285,8 +285,6 @@ public class ItemControllerTest {
         itemDto.setOwner(user);
         itemDto.setRequestId(12L);
         ItemOutDto itemOutDto = new ItemOutDto(123L, "Name", "Test", true, user, 12L);
-       /* when(itemService.createItem(123L,itemDto))
-                .thenReturn(itemOutDto);*/
         doReturn(itemOutDto).when(itemService).createItem(42L, itemDto);
         String content = (mapper.writeValueAsString(itemDto));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/items")
