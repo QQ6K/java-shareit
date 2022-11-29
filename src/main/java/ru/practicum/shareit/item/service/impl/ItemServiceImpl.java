@@ -38,6 +38,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto readById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещь не найдена", "id", String.valueOf(itemId)));
+        userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+                "id", String.valueOf(userId)));
         List<Comment> comments = commentsRepository.findAllByItemId(itemId);
         List<CommentDto> commentDtos = new ArrayList<>(Collections.emptyList());
         if (!comments.isEmpty()) {
