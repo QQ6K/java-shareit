@@ -2,27 +2,26 @@ package ru.practicum.shareit.item.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoBookingNodes;
-import ru.practicum.shareit.item.dto.ItemDtoShort;
-import ru.practicum.shareit.item.dto.ItemOutDto;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,6 +44,12 @@ public class ItemServiceImplTest {
 
     @MockBean
     private UsersRepository usersRepository;
+
+    @MockBean
+    private CommentsRepository commentsRepository;
+
+    @MockBean
+    private BookingsRepository bookingsRepository;
 
     @Test
     public void readById() {
@@ -78,7 +83,6 @@ public class ItemServiceImplTest {
         itemDto.setDescription("New");
         when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
         when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
-
         Optional<Item> itemRes = itemService.updateItem(100L, 3561L, itemDto);
         assertNotNull(itemRes);
         assertEquals(3561L, itemRes.get().getId());
@@ -94,9 +98,30 @@ public class ItemServiceImplTest {
 
     @Test
     public void searchText() {
+        doReturn(List.of(item)).when(itemsRepository).findAll();
+        Collection<Item> itemRes = itemService.searchText("good");
+        assertNotNull(itemRes);
+        assertTrue(itemRes.contains(item));
     }
 
     @Test
     public void addComment() {
+        when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
+        when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
+        CommentDto commentDto;
+        Comment commentUse = new Comment(2121,"test",item,userItem,LocalDateTime.now());
+        when(commentsRepository.save(Mockito.any())).thenReturn((commentUse));
+        when(bookingsRepository.usedCount(Mockito.any(),Mockito.any(), Mockito.any(),Mockito.any())).thenReturn(3);
+        commentDto = itemService.addComment(item.getId(),userItem.getId(),"ok");
+        assertNotNull(commentDto);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void addCommentNegative() {
+        when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
+        when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
+        Comment commentUse = new Comment(2121,"test",item,userItem,LocalDateTime.now());
+        when(commentsRepository.save(Mockito.any())).thenReturn((commentUse));
+        itemService.addComment(item.getId(),userItem.getId(),"ok");
     }
 }
