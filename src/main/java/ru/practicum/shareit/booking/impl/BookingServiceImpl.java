@@ -168,7 +168,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING:
                 return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING,pageable).getContent();
             default:
-                throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+                throw new StateException("Неверный статус");
         }
     }
 
