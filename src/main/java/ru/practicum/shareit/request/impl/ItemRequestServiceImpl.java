@@ -46,7 +46,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     @Override
     public ItemRequest create(ItemRequestDto itemRequestDto, Long userId) {
-        User user = userService.readById(userId);
+        User user = usersRepository.findById(userId)
+                .orElseThrow(() -> new WrongUserException("Пользователя не существует id = "+ userId));
         if (itemRequestDto.getDescription() == null) {
             throw new BadRequestException("Пустое описание запроса");
         }

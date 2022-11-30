@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,6 +54,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void readById() {
+        doReturn(Optional.of(new User(1L,"Test","qweqwe@qwe.qwe")))
+                .when(usersRepository).findById(Mockito.any());
+
     }
 
     @Test
