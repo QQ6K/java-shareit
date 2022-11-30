@@ -20,9 +20,6 @@ public interface BookingsRepository extends JpaRepository<Booking, Long> {
 
         Page<Booking> findByBooker_IdAndStatus(long id, BookingStatus status, Pageable pageable);
 
-        @Query("SELECT b FROM Booking b JOIN b.item i ON b.item = i WHERE i.owner.id = :ownerId ORDER BY b.startDate DESC")
-        Collection<Booking> findOwnerAll(long ownerId);
-
         @Query("SELECT b FROM Booking b " +
                 "WHERE b.booker.id=:id AND b.endDate<:nowTime AND b.status =:status " +
                 "ORDER BY b.startDate DESC")

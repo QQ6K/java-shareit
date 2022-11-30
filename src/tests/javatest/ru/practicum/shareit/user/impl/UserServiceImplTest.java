@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.impl;
+package javatest.ru.practicum.shareit.user.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.impl.UserServiceImpl;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -21,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = UserServiceImpl.class)
 public class UserServiceImplTest {
 
     final private UserDto userDto = new UserDto(100L, "NameTest", "qweqwe@qwe.qwe");
+
     @Autowired
     private UserService userService;
 

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.impl;
+package javatest.ru.practicum.shareit.item.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.booking.impl.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.service.impl.ItemServiceImpl;
 import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -25,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes= ItemServiceImpl.class)
 public class ItemServiceImplTest {
 
     ItemDto itemDto = new ItemDto(3561L, "Thing", "Very good", true, new User(100L, "T", "T"), 123L,

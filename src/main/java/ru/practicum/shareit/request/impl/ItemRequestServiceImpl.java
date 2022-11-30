@@ -34,8 +34,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
 
-    private final UserService userService;
-
     private final UsersRepository usersRepository;
 
     private final ItemRequestRepository itemRequestRepository;
@@ -52,7 +50,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new BadRequestException("Пустое описание запроса");
         }
         ItemRequest itemRequestNew = ItemRequestMapper.toItemRequest(itemRequestDto, user, LocalDateTime.now());
-        log.info(" Ползователь Создал запрос  userid= {}", userId);
+        log.info("Пользователь Создал запрос  userid = {}", userId);
         return itemRequestRepository.save(itemRequestNew);
     }
 

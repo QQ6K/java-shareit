@@ -109,7 +109,6 @@ public class BookingServiceImpl implements BookingService {
             int page = from / size;
             pageable = PageRequest.of(page, size);
         }
-
         switch (bookingState) {
             case ALL:
                 return bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId, pageable).getContent();
@@ -125,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING:
                 return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING, pageable).getContent();
             default:
-                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+                throw new BadRequestException("Неизвестный статус");
         }
     }
 
@@ -176,13 +175,16 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public Booking updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
-                new CrudException("Вещи не существует",
+                new CrudException("Брони не существует",
                         "id", String.valueOf(bookingId)));
         usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
                 new CrudException("Пользователя не существует",
-                        "id", String.valueOf(bookingId)));
+                        "id", String.valueOf(booking.getBooker().getId())));
+        usersRepository.findById(userId).orElseThrow(() ->
+                new CrudException("Пользователя не существует",
+                        "id", String.valueOf(userId)));
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
-            throw new BadRequestException("Несоответствие статуса бронирования" + userId);
+            throw new BadRequestException("Несоответствие статуса бронирования " + userId);
         }
         if (approved.equals(true)) {
             booking.setStatus(BookingStatus.APPROVED);
