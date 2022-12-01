@@ -20,7 +20,6 @@ import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.interfaces.ItemRequestService;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UsersRepository;
-import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -44,8 +43,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     @Override
     public ItemRequest create(ItemRequestDto itemRequestDto, Long userId) {
-        User user = usersRepository.findById(userId)
-                .orElseThrow(() -> new WrongUserException("Пользователя не существует id = "+ userId));
+        User user = usersRepository.findById(userId).orElseThrow(() ->
+                new WrongUserException("Пользователя не существует id = " + userId));
         if (itemRequestDto.getDescription() == null) {
             throw new BadRequestException("Пустое описание запроса");
         }
@@ -56,10 +55,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestItemsDto findItemRequestById(Long requestId, Long userId) {
-        User user = usersRepository.findById(userId)
-                .orElseThrow(() -> new WrongUserException("Пользователя не существует id = "+ userId));
-        ItemRequest itemRequest = itemRequestRepository.findById(requestId)
-                .orElseThrow(() -> new WrongUserException("Запрос не существует id = "+ requestId));
+        User user = usersRepository.findById(userId).orElseThrow(() ->
+                new WrongUserException("Пользователя не существует id = " + userId));
+        ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() ->
+                new WrongUserException("Запрос не существует id = " + requestId));
         ItemRequestDto itemRequestDto  = ItemRequestMapper.toDto(itemRequest);
         List<ItemOutDto> itemDtos = itemsRepository
                 .findAllByRequestId(requestId)
@@ -74,7 +73,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequestItemsDto> itemRequestsItemsDto = new ArrayList<>();
         List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreatedAsc(ownId)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
-        for (ItemRequestDto itemRequestDto: itemRequests){
+        for (ItemRequestDto itemRequestDto: itemRequests) {
             List<ItemOutDto> itemDtos = itemsRepository
                     .findAllByRequestId(itemRequestDto.getId())
                     .stream().map(ItemMapper::toItemOutDto).collect(Collectors.toList());
@@ -88,13 +87,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestItemsDto> getAllItemRequests(Long userId, Integer from, Integer size) {
-        usersRepository.findById(userId)
-                .orElseThrow(() -> new WrongUserException("Пользователя не существует id = "+ userId));
+        usersRepository.findById(userId).orElseThrow(() ->
+                new WrongUserException("Пользователя не существует id = " + userId));
         Pageable pageable;
        if (size == null || from == null) {
            pageable = Pageable.unpaged();
-        }
-       else if (size <= 0 || from < 0){
+        } else if (size <= 0 || from < 0) {
            throw new BadRequestException("Ошибка параметров пагинации");
        } else {
            int page = from / size;
@@ -103,7 +101,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
        List<ItemRequestDto> itemRequests = itemRequestRepository.findAllByNotRequesterId(userId, pageable)
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList());
        List<ItemRequestItemsDto> itemRequestItemsDtos = new ArrayList<>();
-       for (ItemRequestDto itemRequestDto: itemRequests){
+       for (ItemRequestDto itemRequestDto: itemRequests) {
             List<ItemOutDto> itemDtos = itemsRepository
                     .findAllByRequestId(itemRequestDto.getId())
                     .stream().map(ItemMapper::toItemOutDto).collect(Collectors.toList());

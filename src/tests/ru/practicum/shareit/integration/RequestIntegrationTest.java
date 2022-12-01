@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.service.impl.ItemServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.impl.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -27,7 +26,6 @@ import static org.hamcrest.Matchers.equalTo;
 public class RequestIntegrationTest {
 
     private final EntityManager em;
-    private final ItemServiceImpl itemService;
     private final UserServiceImpl userService;
     private final ItemRequestServiceImpl requestService;
 

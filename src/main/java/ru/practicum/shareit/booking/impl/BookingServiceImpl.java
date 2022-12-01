@@ -2,11 +2,8 @@ package ru.practicum.shareit.booking.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingsRepository;
@@ -27,9 +24,7 @@ import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +86,9 @@ public class BookingServiceImpl implements BookingService {
     public Collection<Booking> readAllUser(Long userId, String state, Integer from, Integer size) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        if (state==null) {state="ALL";}
+        if (state == null) {
+            state = "ALL";
+        }
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -102,8 +99,7 @@ public class BookingServiceImpl implements BookingService {
       Pageable pageable;
         if (size == null || from == null) {
             pageable = Pageable.unpaged();
-        }
-        else if (size <= 0 || from < 0){
+        } else if (size <= 0 || from < 0) {
             throw new BadRequestException("Ошибка параметров пагинации");
         } else {
             int page = from / size;
@@ -133,17 +129,18 @@ public class BookingServiceImpl implements BookingService {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         BookingState bookingState;
-        if (state==null) {state="ALL";}
+        if (state == null) {
+            state = "ALL";
+        }
         Pageable pageable;
         if (size == null || from == null) {
             pageable = Pageable.unpaged();
-        }
-        else if (size < 0 || from < 0){
+        } else if (size < 0 || from < 0) {
             throw new BadRequestException("Ошибка параметров пагинации");
         } else {
             int page = from / size;
-            pageable = PageRequest.of(page, size);}
-
+            pageable = PageRequest.of(page, size);
+        }
         try {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования владельца id: {}", userId);

@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ItemMapper {
 

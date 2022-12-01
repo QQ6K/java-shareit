@@ -1,10 +1,8 @@
 package ru.practicum.shareit.request.dto;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDto;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -12,7 +10,6 @@ import java.util.List;
 
 @Component
 public class ItemRequestMapper {
-    UsersRepository usersRepository;
 
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto, User requester, LocalDateTime now) {
         ItemRequest itemRequest = new ItemRequest();
@@ -37,6 +34,7 @@ public class ItemRequestMapper {
                 itemRequest.getRequester().getId(),
                 itemRequest.getCreated());
     }
+
     public static ItemRequestItemsDto toDtoItems(ItemRequest itemRequest, List<ItemOutDto> items) {
         return ItemRequestItemsDto
                 .builder()
