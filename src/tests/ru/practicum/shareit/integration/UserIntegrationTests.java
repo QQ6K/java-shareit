@@ -35,7 +35,5 @@ public class UserIntegrationTests {
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
         assertThat(userOut.getEmail(), equalTo(userDto.getEmail()));
-        em.clear();
-        em.close();
     }
 }
