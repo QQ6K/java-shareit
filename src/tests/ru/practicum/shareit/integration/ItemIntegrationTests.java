@@ -52,5 +52,7 @@ public class ItemIntegrationTests {
                 .setParameter("description", item.getDescription())
                 .getSingleResult();
         assertThat(itemOut.getDescription(), equalTo(itemDto.getDescription()));
+        em.clear();
+        em.close();
     }
 }

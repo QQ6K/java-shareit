@@ -71,8 +71,10 @@ public class ItemServiceImplTest {
 
     @Test
     public void createItemTest() {
+        Item item1 = item;
+        when(itemsRepository.save(Mockito.any())).thenReturn(item1);
         when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
-        when(usersRepository.findById(100L)).thenReturn(Optional.of(new User()));
+        when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
         ItemOutDto itemRes = itemService.createItem(100L, itemDto);
         assertNotNull(itemRes);
         assertEquals("Very good", itemRes.getDescription());

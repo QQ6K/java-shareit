@@ -97,10 +97,9 @@ public class ItemServiceImpl implements ItemService {
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
-        item = itemRepository.save(item);
-        log.info("Создание вещи  id: {}", item.getId());
-        Optional<Item> itemReturn = itemRepository.findById(item.getId());
-        return ItemMapper.toItemOutDto(itemReturn.get());
+        Item itemOut = itemRepository.save(item);
+        log.info("Создание вещи  id: {}", itemOut.getId());
+        return ItemMapper.toItemOutDto(itemOut);
     }
 
     @Override
