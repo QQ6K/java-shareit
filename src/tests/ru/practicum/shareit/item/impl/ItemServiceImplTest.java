@@ -1,4 +1,4 @@
-package javatest.ru.practicum.shareit.item.impl;
+package ru.practicum.shareit.item.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.practicum.shareit.booking.BookingsRepository;
-import ru.practicum.shareit.booking.impl.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;

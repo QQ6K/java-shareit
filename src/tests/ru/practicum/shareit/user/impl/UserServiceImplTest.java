@@ -1,4 +1,4 @@
-package javatest.ru.practicum.shareit.user.impl;
+package ru.practicum.shareit.user.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
-import ru.practicum.shareit.user.impl.UserServiceImpl;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 

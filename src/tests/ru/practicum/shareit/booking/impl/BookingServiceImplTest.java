@@ -1,4 +1,4 @@
-package javatest.ru.practicum.shareit.booking.impl;
+package ru.practicum.shareit.booking.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.practicum.shareit.booking.BookingsRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoImport;
-import ru.practicum.shareit.booking.impl.BookingServiceImpl;
 import ru.practicum.shareit.booking.interfaces.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.BookingStatus;

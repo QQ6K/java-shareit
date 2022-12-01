@@ -1,4 +1,4 @@
-package javatest.ru.practicum.shareit.request.impl;
+package ru.practicum.shareit.request.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,15 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestItemsDto;
-import ru.practicum.shareit.request.impl.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.interfaces.ItemRequestService;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UsersRepository;
-import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -39,11 +36,6 @@ public class ItemRequestServiceImplTest {
 
     @MockBean
     private ItemRequestRepository itemRequestRepository;
-
-    @MockBean
-    private ItemsRepository itemsRepository;
-
-    ItemRequestDto itemRequestDto = new ItemRequestDto(200L, "Test", 100L, LocalDateTime.now());
 
     User userRequester = new User(100L, "John Doe", "qwe@qwe.qwe");
 
