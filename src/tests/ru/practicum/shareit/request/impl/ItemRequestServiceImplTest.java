@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.practicum.shareit.booking.BookingsRepository;
+import ru.practicum.shareit.item.CommentsRepository;
+import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestItemsDto;
@@ -32,7 +35,16 @@ public class ItemRequestServiceImplTest {
     private ItemRequestService itemRequestService;
 
     @MockBean
+    private ItemsRepository itemsRepository;
+
+    @MockBean
     private UsersRepository usersRepository;
+
+    @MockBean
+    private CommentsRepository commentsRepository;
+
+    @MockBean
+    private BookingsRepository bookingsRepository;
 
     @MockBean
     private ItemRequestRepository itemRequestRepository;

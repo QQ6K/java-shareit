@@ -37,7 +37,7 @@ public class ItemRequestControllerTest {
     @Autowired
     MockMvc mvc;
 
-   @Test
+    @Test
     public void testCreateNewRequest() throws Exception {
         when(itemRequestServiceImpl.findAllItemRequestsByOwnerId(Mockito.anyLong()))
                 .thenReturn(new ArrayList<>());
@@ -69,7 +69,7 @@ public class ItemRequestControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
-                .string("{\"id\":null,\"description\":null,\"created\":null,\"items\":null,\"requester_id\":null}"));
+                        .string("{\"id\":null,\"description\":null,\"created\":null,\"items\":null,\"requester_id\":null}"));
     }
 
     @Test

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes= BookingServiceImpl.class)
+@SpringBootTest(classes = BookingServiceImpl.class)
 public class BookingServiceImplTest {
 
     @Autowired

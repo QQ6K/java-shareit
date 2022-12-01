@@ -139,4 +139,33 @@ public class UserControllerTest {
     }
 
 
+    @Test
+    public void jsonUserDtoNegativeFormatEmail() throws Exception {
+        String jsonContent = "{\"name\":\"Name\",\"email\":\"johndoe-example.com\"}";
+        mvc.perform(post("/users")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
+
+    @Test
+    public void jsonUserDtoNegativeEmptyEmaill() throws Exception {
+        String jsonContent = "{\"name\":\"Name\",\"email\":\"\"}";
+        mvc.perform(post("/users")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
+
+    @Test
+    public void jsonUserDtoNegativeEmptyName() throws Exception {
+        String jsonContent = "{\"name\":\"\",\"email\":\"asd@asd.asd\"}";
+        mvc.perform(post("/users")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
 }

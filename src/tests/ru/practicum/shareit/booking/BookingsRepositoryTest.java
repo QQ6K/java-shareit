@@ -19,16 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Transactional
-//@AutoConfigureTestDatabase
-
-//@Import(BookingsRepository.class)
-//@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = BookingsRepository.class))
-
 public class BookingsRepositoryTest {
     @Autowired
     TestEntityManager tem;
-@Autowired
- BookingsRepository bookingsRepository;
+    @Autowired
+    BookingsRepository bookingsRepository;
 
     @Test
     public void findBookingByBooker_IdOrderByStartDateDescTest(){

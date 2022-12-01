@@ -109,8 +109,8 @@ public class ItemServiceImplTest {
         when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
         when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
         CommentDto commentDto;
-        Comment commentUse = new Comment(2121,"test",item,userItem,LocalDateTime.now());
-        when(commentsRepository.save(Mockito.any())).thenReturn((commentUse));
+        Comment commentUser = new Comment(2121L,"test",item,userItem,LocalDateTime.now());
+        when(commentsRepository.save(Mockito.any())).thenReturn((commentUser));
         when(bookingsRepository.usedCount(Mockito.any(),Mockito.any(), Mockito.any(),Mockito.any())).thenReturn(3);
         commentDto = itemService.addComment(item.getId(),userItem.getId(),"ok");
         assertNotNull(commentDto);
@@ -120,7 +120,7 @@ public class ItemServiceImplTest {
     public void addCommentNegative() {
         when(itemsRepository.findById(3561L)).thenReturn(Optional.of(item));
         when(usersRepository.findById(100L)).thenReturn(Optional.of(userItem));
-        Comment commentUse = new Comment(2121,"test",item,userItem,LocalDateTime.now());
+        Comment commentUse = new Comment(2121L,"test",item,userItem,LocalDateTime.now());
         when(commentsRepository.save(Mockito.any())).thenReturn((commentUse));
         itemService.addComment(item.getId(),userItem.getId(),"ok");
     }

@@ -96,7 +96,7 @@ public class ItemControllerTest {
         String localDateTimeString = localDateTime.toString();
         localDateTimeString = localDateTimeString.substring(0, localDateTimeString.length() - 2);
         commentDto1.setCreated(LocalDateTime.parse(localDateTimeString));
-        commentDto1.setId(1);
+        commentDto1.setId(1L);
         commentDto1.setText("Text");
 
         CommentDto commentDto2 = new CommentDto();
@@ -105,7 +105,7 @@ public class ItemControllerTest {
         localDateTimeString = localDateTime.toString();
         localDateTimeString = localDateTimeString.substring(0, localDateTimeString.length() - 2);
         commentDto2.setCreated(LocalDateTime.parse(localDateTimeString, formatter));
-        commentDto2.setId(1);
+        commentDto2.setId(1L);
         commentDto2.setText("Text");
         List<CommentDto> commentDtos = List.of(commentDto1, commentDto2);
 
@@ -158,7 +158,7 @@ public class ItemControllerTest {
         String localDateTimeString = localDateTime.toString();
         localDateTimeString = (char) 34 + localDateTimeString.substring(0, localDateTimeString.length() - 2) + (char) 34;
         commentDto1.setCreated(localDateTime);
-        commentDto1.setId(1);
+        commentDto1.setId(1L);
         commentDto1.setText("Text");
         when(itemService.addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString())).thenReturn(commentDto1);
 
@@ -172,14 +172,13 @@ public class ItemControllerTest {
                         localDateTimeString + "}"));
     }
 
-
     @Test
     public void testAddComment2() throws Exception {
         CommentDto commentDto = new CommentDto();
         commentDto.setAuthorName("JaneDoe");
         LocalDateTime localDateTime = LocalDateTime.now();
         commentDto.setCreated(localDateTime);
-        commentDto.setId(1);
+        commentDto.setId(1L);
         commentDto.setText("Text");
         String content = mapper.writeValueAsString(commentDto);
         MockHttpServletRequestBuilder requestBuilder = post("/items/{itemId}/comment", 123L)
@@ -299,5 +298,39 @@ public class ItemControllerTest {
                         .string("{\"id\":123,\"name\":\"Name\"," +
                                 "\"description\":\"Test\",\"available\":true,\"owner\":" +
                                 "{\"id\":123,\"name\":\"Name\",\"email\":\"qwe@qwe.qwe\"},\"requestId\":12}"));
+    }
+
+
+    @Test
+    public void jsonItemDtoNegativeEmptyName() throws Exception {
+        String jsonContent = "{\"name\":\"\",\"description\":\"asdasd\",\"available\":\"true\"}";
+        mvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", "42")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
+
+    @Test
+    public void jsonItemDtoNegativeEmptyDescription() throws Exception {
+        String jsonContent = "{\"name\":\"name\",\"description\":\"\",\"available\":\"true\"}";
+        mvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", "42")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status()
+                        .isBadRequest());
+    }
+
+    @Test
+    public void jsonItemDtoNegativeEmptyAvailable() throws Exception {
+        String jsonContent = "{\"name\":\"name\",\"description\":\"asdasasd\",\"available\":\"\"}";
+        mvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", "42")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                        .andExpect(status()
+                        .isBadRequest());
     }
 }

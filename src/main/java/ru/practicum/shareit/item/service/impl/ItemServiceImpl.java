@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
-        itemRepository.save(item);
+        item = itemRepository.save(item);
         log.info("Создание вещи  id: {}", item.getId());
         Optional<Item> itemReturn = itemRepository.findById(item.getId());
         return ItemMapper.toItemOutDto(itemReturn.get());
@@ -167,7 +167,7 @@ public class ItemServiceImpl implements ItemService {
         int l = bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (l > 0) {
             log.info("Пользователь id = {}. Вещь = {}. Сохранение комментария: {}", itemId, userId, text);
-            return CommentMapper.toDto(commentsRepository.save(new Comment(0, text, item, user, LocalDateTime.now())));
+            return CommentMapper.toDto(commentsRepository.save(new Comment(0L, text, item, user, LocalDateTime.now())));
         } else {
             throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
         }
