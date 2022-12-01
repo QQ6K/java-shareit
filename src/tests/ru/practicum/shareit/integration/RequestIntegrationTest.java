@@ -5,15 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.service.impl.ItemServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.impl.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.impl.UserServiceImpl;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -29,13 +32,12 @@ public class RequestIntegrationTest {
     private final UserServiceImpl userService;
     private final ItemRequestServiceImpl requestService;
 
-
     @Test
     void create() {
         ItemRequestDto itemRequestDto = new ItemRequestDto(653L, "Description", 155L, LocalDateTime.now());
-        UserDto userDto = new UserDto(1L, "Name", "qweqwe@qweqwe.qweqwe");
-        userService.createUser(userDto);
-        requestService.create(itemRequestDto, userDto.getId());
+        UserDto userDto = new UserDto(22L, "Name", "qweqwe@qweqwe.qweqwe");
+        Optional<User> out = userService.createUser(userDto);
+        requestService.create(itemRequestDto, out.get().getId());
         TypedQuery<ItemRequest> query =
                 em.createQuery("Select ir from ItemRequest ir where ir.description = :id", ItemRequest.class);
         ItemRequest itemRequestOut = query
