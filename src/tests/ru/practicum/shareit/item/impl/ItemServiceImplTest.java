@@ -29,12 +29,12 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes= ItemServiceImpl.class)
 public class ItemServiceImplTest {
 
-    ItemDto itemDto = new ItemDto(3561L, "Thing", "Very good", true, new User(100L, "T", "T"), 123L,
+    private final ItemDto itemDto = new ItemDto(3561L, "Thing", "Very good", true, new User(100L, "T", "T"), 123L,
             Collections.emptyList(), new ItemDtoBookingNodes(), new ItemDtoBookingNodes());
 
-    User userItem = new User(100L, "T", "T");
+    private final User userItem = new User(100L, "T", "T");
 
-    Item item = new Item(3561L, "Thing", "Very good", true, userItem, 123L);
+    private final Item item = new Item(3561L, "Thing", "Very good", true, userItem, 123L);
 
     @Autowired
     private ItemService itemService;

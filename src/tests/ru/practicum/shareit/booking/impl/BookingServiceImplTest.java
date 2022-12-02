@@ -36,13 +36,10 @@ public class BookingServiceImplTest {
 
     @Autowired
     private BookingService bookingService;
-
     @MockBean
     private ItemsRepository itemsRepository;
-
     @MockBean
     private UsersRepository usersRepository;
-
     @MockBean
     private BookingsRepository bookingsRepository;
 

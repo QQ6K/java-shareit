@@ -30,10 +30,8 @@ public class ItemRequestControllerTest {
 
     @Autowired
     private ItemRequestController itemRequestController;
-
     @MockBean
     private ItemRequestServiceImpl itemRequestServiceImpl;
-
     @Autowired
     MockMvc mvc;
 

@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -18,13 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ItemsRepositoryTest {
 
     @Autowired
-    TestEntityManager tem;
-
+    private TestEntityManager tem;
     @Autowired
-    UsersRepository usersRepository;
-
-    @Autowired
-    ItemsRepository itemsRepository;
+    private ItemsRepository itemsRepository;
 
     @Test
     public void findAllByRequestId() {
@@ -48,6 +43,4 @@ class ItemsRepositoryTest {
                 itemsRepository.findAllByRequestId(123154L);
         assertEquals(result.size(), 2);
     }
-
-
 }

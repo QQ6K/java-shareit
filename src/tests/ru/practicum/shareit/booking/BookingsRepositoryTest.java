@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 public class BookingsRepositoryTest {
     @Autowired
-    TestEntityManager tem;
+    private TestEntityManager tem;
     @Autowired
     BookingsRepository bookingsRepository;
 

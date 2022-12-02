@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -24,7 +24,7 @@ public class ItemController {
 
     @PostMapping
     public ItemOutDto saveItem(@Valid @RequestHeader("X-Sharer-User-Id")
-                                  Long userId, @Valid @RequestBody ItemDto itemDto) {
+                               Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Запрос 'POST /items'");
         return itemService.createItem(userId, itemDto);
     }
@@ -50,7 +50,7 @@ public class ItemController {
 
     @GetMapping
     public Collection<ItemDtoShort> readAll(@RequestHeader("X-Sharer-User-Id") @NotNull(message = "Отсутсвует X-Sharer-User-Id")
-                                    long userId) {
+                                            long userId) {
         log.info("Запрос 'GET /items' пользователя " + userId);
         return itemService.readAll(userId);
     }

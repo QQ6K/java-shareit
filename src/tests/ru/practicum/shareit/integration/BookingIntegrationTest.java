@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDto;
 import ru.practicum.shareit.item.service.impl.ItemServiceImpl;
-import ru.practicum.shareit.request.impl.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.impl.UserServiceImpl;
 import ru.practicum.shareit.user.model.User;
@@ -32,11 +31,8 @@ import static org.hamcrest.Matchers.equalTo;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BookingIntegrationTest {
     private final EntityManager em;
-
     private final BookingServiceImpl bookingService;
-
     private final UserServiceImpl userService;
-
     private final ItemServiceImpl itemService;
 
     @Test
@@ -46,7 +42,6 @@ public class BookingIntegrationTest {
 
         User owner = new User(null, "Owner", "owner@qweqwe.qweqwe");
         User author = new User(null, "Author", "qautort@qweqwe.qweqwe");
-        User requester = new User(null, "Name", "rekvester9000@qweqwe.qweqwe");
 
         Optional<User> ownerOut = userService.createUser(UserMapper.toDto(owner));
         Optional<User> authorOut = userService.createUser(UserMapper.toDto(author));

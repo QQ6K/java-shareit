@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-    public class ItemRequestItemsDto {
+public class ItemRequestItemsDto {
     private Long id;
     private String description;
     @JsonProperty("requester_id")

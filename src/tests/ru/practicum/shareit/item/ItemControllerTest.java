@@ -43,16 +43,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ItemControllerTest {
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @Autowired
     private ItemController itemController;
-
     @MockBean
     private ItemService itemService;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"
     );
 

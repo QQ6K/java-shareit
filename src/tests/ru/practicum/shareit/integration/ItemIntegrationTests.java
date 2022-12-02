@@ -29,9 +29,9 @@ import static org.hamcrest.Matchers.equalTo;
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemIntegrationTests {
+
     private final EntityManager em;
     private final ItemServiceImpl itemService;
-
     private final UserServiceImpl userService;
 
     @Test

@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -20,16 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CommentsRepositoryTest {
 
     @Autowired
-    TestEntityManager tem;
-
+    private TestEntityManager tem;
     @Autowired
-    CommentsRepository commentsRepository;
-
-    @Autowired
-    UsersRepository usersRepository;
-
-    @Autowired
-    ItemsRepository itemsRepository;
+    private CommentsRepository commentsRepository;
 
     @Test
     void findAllByItemId() {

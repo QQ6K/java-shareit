@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.practicum.shareit.booking.BookingsRepository;
-import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -33,27 +31,18 @@ public class ItemRequestServiceImplTest {
 
     @Autowired
     private ItemRequestService itemRequestService;
-
-    @MockBean
-    private ItemsRepository itemsRepository;
-
     @MockBean
     private UsersRepository usersRepository;
-
-    @MockBean
-    private CommentsRepository commentsRepository;
-
-    @MockBean
-    private BookingsRepository bookingsRepository;
-
     @MockBean
     private ItemRequestRepository itemRequestRepository;
+    @MockBean
+    private ItemsRepository itemRepository;
 
-    User userRequester = new User(100L, "John Doe", "qwe@qwe.qwe");
+    private final User userRequester = new User(100L, "John Doe", "qwe@qwe.qwe");
 
-    ItemRequest itemRequest = new ItemRequest(200L, "Test", userRequester, LocalDateTime.now());
+    private final ItemRequest itemRequest = new ItemRequest(200L, "Test", userRequester, LocalDateTime.now());
 
-    ItemRequest itemRequest777 = new ItemRequest(
+    private final ItemRequest itemRequest777 = new ItemRequest(
             777L,
             "777",
             new User(1L, "asd", "q@q.q"),
@@ -68,9 +57,9 @@ public class ItemRequestServiceImplTest {
     @Test
     public void createTest() {
         LocalDateTime time = LocalDateTime.now();
-        User user = new User(100L,"Test","qwe@qwe.qwe");
-        ItemRequestDto itemRequestDtoNew = new ItemRequestDto(null,"Good",100L,time);
-        ItemRequest itemRequestNew = new ItemRequest(null,"Good",user,time);
+        User user = new User(100L, "Test", "qwe@qwe.qwe");
+        ItemRequestDto itemRequestDtoNew = new ItemRequestDto(null, "Good", 100L, time);
+        ItemRequest itemRequestNew = new ItemRequest(null, "Good", user, time);
         doReturn(itemRequestNew).when(itemRequestRepository).save(itemRequestNew);
         doReturn(Optional.of(user)).when(usersRepository).findById(100L);
         ItemRequest itemRequestRes = itemRequestService.create(itemRequestDtoNew, 100L);

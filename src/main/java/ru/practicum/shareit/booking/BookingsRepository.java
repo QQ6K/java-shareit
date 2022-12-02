@@ -15,7 +15,6 @@ import java.util.List;
 @Repository
 public interface BookingsRepository extends JpaRepository<Booking, Long> {
 
-
         Page<Booking> findBookingByBooker_IdOrderByStartDateDesc(Long id, Pageable pageable);
 
         Page<Booking> findByBooker_IdAndStatus(long id, BookingStatus status, Pageable pageable);
