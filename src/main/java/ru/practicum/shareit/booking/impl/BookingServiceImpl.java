@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingsRepository;
@@ -81,9 +83,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> readAllUser(Long userId, String state) {
+    public Collection<Booking> readAllUser(Long userId, String state, Integer from, Integer size) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
+        if (state == null) {
+            state = "ALL";
+        }
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -91,53 +96,75 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
+      Pageable pageable;
+        if (size == null || from == null) {
+            pageable = Pageable.unpaged();
+        } else if (size <= 0 || from < 0) {
+            throw new BadRequestException("Ошибка параметров пагинации");
+        } else {
+            int page = from / size;
+            pageable = PageRequest.of(page, size);
+        }
         switch (bookingState) {
             case ALL:
-                return bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId);
+                return bookingsRepository.findBookingByBooker_IdOrderByStartDateDesc(userId, pageable).getContent();
             case FUTURE:
-                return bookingsRepository.findFuture(userId, LocalDateTime.now());
+                return bookingsRepository.findFuture(userId, LocalDateTime.now(), pageable).getContent();
             case PAST:
                 return bookingsRepository.findByBookerIdStatePast(userId,
-                        LocalDateTime.now(), BookingStatus.APPROVED);
+                        LocalDateTime.now(), BookingStatus.APPROVED, pageable).getContent();
             case CURRENT:
-                return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now());
+                return bookingsRepository.findByBookerIdStateCurrent(userId, LocalDateTime.now(),pageable).getContent();
             case REJECTED:
-                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED, pageable).getContent();
             case WAITING:
-                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
+                return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING, pageable).getContent();
             default:
-                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+                throw new BadRequestException("Неизвестный статус");
         }
     }
 
     @Override
-    public Collection<Booking> readAllOwner(Long userId, String state) {
+    public Collection<Booking> readAllOwner(Long userId, String state, Integer size, Integer from) {
         usersRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         BookingState bookingState;
+        if (state == null) {
+            state = "ALL";
+        }
+        Pageable pageable;
+        if (size == null || from == null) {
+            pageable = Pageable.unpaged();
+        } else if (size < 0 || from < 0) {
+            throw new BadRequestException("Ошибка параметров пагинации");
+        } else {
+            int page = from / size;
+            pageable = PageRequest.of(page, size);
+        }
         try {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования владельца id: {}", userId);
         } catch (IllegalArgumentException e) {
             throw new StateException("Unknown state: UNSUPPORTED_STATUS");
         }
+
         switch (bookingState) {
             case ALL:
-                return bookingsRepository.findOwnerAll(userId);
+                return bookingsRepository.findOwnerAll(userId,pageable).getContent();
             case FUTURE:
-                return bookingsRepository.findOwnerFuture(userId, LocalDateTime.now());
+                return bookingsRepository.findOwnerFuture(userId, LocalDateTime.now(),pageable).getContent();
             case PAST:
                 return bookingsRepository.findOwnerPast(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageable).getContent();
             case CURRENT:
                 return bookingsRepository.findOwnerCurrent(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),pageable).getContent();
             case REJECTED:
-                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.REJECTED);
+                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable).getContent();
             case WAITING:
-                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING);
+                return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING,pageable).getContent();
             default:
-                throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+                throw new StateException("Неверный статус");
         }
     }
 
@@ -145,13 +172,16 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public Booking updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = bookingsRepository.findById(bookingId).orElseThrow(() ->
-                new CrudException("Вещи не существует",
+                new CrudException("Брони не существует",
                         "id", String.valueOf(bookingId)));
         usersRepository.findById(booking.getBooker().getId()).orElseThrow(() ->
                 new CrudException("Пользователя не существует",
-                        "id", String.valueOf(bookingId)));
+                        "id", String.valueOf(booking.getBooker().getId())));
+        usersRepository.findById(userId).orElseThrow(() ->
+                new CrudException("Пользователя не существует",
+                        "id", String.valueOf(userId)));
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
-            throw new BadRequestException("Несоответствие статуса бронирования" + userId);
+            throw new BadRequestException("Несоответствие статуса бронирования " + userId);
         }
         if (approved.equals(true)) {
             booking.setStatus(BookingStatus.APPROVED);

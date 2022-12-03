@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.interfaces;
 
-
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -15,7 +14,7 @@ public interface UserService {
 
     Optional<User> updateUser(long userId, UserDto userDto);
 
-    void deleteUser(long userId);
+    void deleteUser(Long userId);
 
     Collection<User> readAll();
 }

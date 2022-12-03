@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.impl;
+package ru.practicum.shareit.item.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.interfaces.ItemService;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UsersRepository;
@@ -38,6 +38,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto readById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new CrudException("Вещь не найдена", "id", String.valueOf(itemId)));
+        userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
+                "id", String.valueOf(userId)));
         List<Comment> comments = commentsRepository.findAllByItemId(itemId);
         List<CommentDto> commentDtos = new ArrayList<>(Collections.emptyList());
         if (!comments.isEmpty()) {
@@ -56,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
         if (!bookingLast.isEmpty()) {
             itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(),bookingLast.get(0).getBooker().getId());
         } else itemDtoBookingNodesLast = null;
-        ItemDto itemDto = ItemMapper.toItemDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
+        ItemDto itemDto = ItemMapper.toItemBookingDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
         log.info("Просмотр вещи  id = {} пользователем id = {}", itemDto, userId);
         return itemDto;
     }
@@ -90,14 +92,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Optional<Item> createItem(Long userId, ItemDto itemDto) {
+    public ItemOutDto createItem(Long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
-        itemRepository.save(item);
-        log.info("Создание вещи  id: {}", item.getId());
-        return itemRepository.findById(item.getId());
+        Item itemOut = itemRepository.save(item);
+        log.info("Создание вещи  id: {}", itemOut.getId());
+        return ItemMapper.toItemOutDto(itemOut);
     }
 
     @Override
@@ -155,7 +157,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Comment addComment(Long itemId, long userId, String text) {
+    public CommentDto addComment(Long itemId, long userId, String text) {
         if (text.equals("")) {
             throw new BadRequestException("Пустой комментарий");
         }
@@ -164,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
         int l = bookingsRepository.usedCount(userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (l > 0) {
             log.info("Пользователь id = {}. Вещь = {}. Сохранение комментария: {}", itemId, userId, text);
-            return commentsRepository.save(new Comment(0, text, item, user, LocalDateTime.now()));
+            return CommentMapper.toDto(commentsRepository.save(new Comment(0L, text, item, user, LocalDateTime.now())));
         } else {
             throw new BadRequestException("Без бронирования нельзя оставить отзыв id = " + itemId);
         }

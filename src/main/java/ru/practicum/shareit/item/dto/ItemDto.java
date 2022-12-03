@@ -21,6 +21,7 @@ public class ItemDto {
     @NotNull(message = "Отсутствует поле 'Статус'")
     private Boolean available;
     private User owner;
+    private Long requestId;
     private Collection<CommentDto> comments;
     private ItemDtoBookingNodes lastBooking;
     private ItemDtoBookingNodes nextBooking;

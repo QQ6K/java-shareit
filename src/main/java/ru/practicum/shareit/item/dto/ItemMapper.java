@@ -5,7 +5,9 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public class ItemMapper {
-    public static ItemDto toItemDto(Item item,
+
+
+    public static ItemDto toItemBookingDto(Item item,
                                     List<CommentDto> commentsDto,
                                     ItemDtoBookingNodes lastBooking,
                                     ItemDtoBookingNodes nextBooking) {
@@ -20,14 +22,26 @@ public class ItemMapper {
         return itemDto;
     }
 
+    public static ItemOutDto toItemOutDto(Item item) {
+        ItemOutDto itemOutDto = new ItemOutDto();
+        itemOutDto.setId(item.getId());
+        itemOutDto.setName(item.getName());
+        itemOutDto.setDescription(item.getDescription());
+        itemOutDto.setAvailable(item.getAvailable());
+        itemOutDto.setOwner(item.getOwner());
+        itemOutDto.setRequestId(item.getRequestId());
+        return itemOutDto;
+    }
+
     public static Item fromDto(ItemDto itemDto) {
         return new Item(
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                itemDto.getOwner());
-
+                itemDto.getOwner(),
+                itemDto.getRequestId()
+                );
     }
 
     public static ItemDtoShort toItemDtoShort(Item item,
@@ -42,7 +56,5 @@ public class ItemMapper {
         itemDtoShort.setNextBooking(nextBooking);
         return itemDtoShort;
     }
-
-
 
 }
