@@ -120,7 +120,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING:
                 return bookingsRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING, pageable).getContent();
             default:
-                throw new BadRequestException("Неизвестный статус");
+                throw new BadRequestException("Unknown state: " + state);
         }
     }
 
@@ -145,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
             bookingState = BookingState.valueOf(state);
             log.info("Просмотр бронирования владельца id: {}", userId);
         } catch (IllegalArgumentException e) {
-            throw new StateException("Unknown state: UNSUPPORTED_STATUS");
+            throw new StateException("Unknown state: " + state);
         }
 
         switch (bookingState) {
@@ -164,7 +164,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING:
                 return bookingsRepository.findByOwnerIdAndStatus(userId, BookingStatus.WAITING,pageable).getContent();
             default:
-                throw new StateException("Неверный статус");
+                throw new StateException("Unknown state: " + state);
         }
     }
 

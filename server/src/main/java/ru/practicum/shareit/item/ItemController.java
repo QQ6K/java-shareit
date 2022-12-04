@@ -65,6 +65,7 @@ public class ItemController {
     public CommentDto addComment(@PathVariable("itemId") Long itemId,
                                  @RequestHeader("X-Sharer-User-Id") long userId,
                                  @RequestBody @Valid CommentDto commentDto) {
+        log.info("Запрос 'POST /{}/comment'", itemId);
         return itemService.addComment(itemId, userId, commentDto.getText());
     }
 }

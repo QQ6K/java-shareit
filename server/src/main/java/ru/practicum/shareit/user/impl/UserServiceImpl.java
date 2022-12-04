@@ -33,9 +33,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Optional<User> createUser(UserDto userDto) {
-        User user;
+        User user = UserMapper.fromDto(userDto);
         try {
-            user = userRepository.save(UserMapper.fromDto(userDto));
+            user = userRepository.save(user);
             log.info("Создание пользователя  id: {}", user.getId());
         } catch (DataIntegrityViolationException e) {
             throw new EmailConflictException("Пользователь с таким email уже существует", "email", userDto.getEmail());
