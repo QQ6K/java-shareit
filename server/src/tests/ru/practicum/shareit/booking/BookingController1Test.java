@@ -33,17 +33,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = {BookingController.class})
+@ContextConfiguration(classes = {BookingController1.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(controllers = BookingController.class)
-public class BookingControllerTest {
+@WebMvcTest(controllers = BookingController1.class)
+public class BookingController1Test {
 
     @Autowired
     private MockMvc mvc;
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-    private BookingController bookingController;
+    private BookingController1 bookingController1;
     @MockBean
     private BookingService bookingService;
 
@@ -67,7 +67,7 @@ public class BookingControllerTest {
         MockHttpServletRequestBuilder patchResult = MockMvcRequestBuilders.patch("/bookings/{bookingId}", 153L);
         MockHttpServletRequestBuilder requestBuilder = patchResult.param("approved", String.valueOf(true))
                 .header("X-Sharer-User-Id", 42L);
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController)
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController1)
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk())
@@ -80,7 +80,7 @@ public class BookingControllerTest {
         when(bookingService.readAllOwner(42L, "WAITING", 0, 20)).thenReturn(new ArrayList<>(List.of()));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/bookings/owner")
                 .header("X-Sharer-User-Id", "42");
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController)
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController1)
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk())
@@ -93,7 +93,7 @@ public class BookingControllerTest {
         when(bookingService.readAllUser(43L, "WAITING", 20, 20)).thenReturn(new ArrayList<>(List.of()));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/bookings")
                 .header("X-Sharer-User-Id", "43");
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController)
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController1)
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk())
@@ -122,7 +122,7 @@ public class BookingControllerTest {
         doReturn(booking).when(bookingService).createBooking(42L, bookingDtoImport);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/bookings/{bookingId}", 123L)
                 .header("X-Sharer-User-Id", 123L);
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController)
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController1)
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
@@ -163,7 +163,7 @@ public class BookingControllerTest {
                 .header("X-Sharer-User-Id", "42")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController)
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(bookingController1)
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk())
