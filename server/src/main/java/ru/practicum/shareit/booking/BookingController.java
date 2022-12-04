@@ -14,8 +14,8 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 @Slf4j
-//@RestController
-//@RequestMapping(path = "/bookings")
+@RestController
+@RequestMapping(path = "/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
