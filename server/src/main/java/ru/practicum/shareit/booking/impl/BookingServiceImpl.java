@@ -135,7 +135,7 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable;
         if (size == null || from == null) {
             pageable = Pageable.unpaged();
-        } else if (size < 0 || from < 0) {
+        } else if (size <= 0 || from < 0) {
             throw new BadRequestException("Ошибка параметров пагинации");
         } else {
             int page = from / size;
