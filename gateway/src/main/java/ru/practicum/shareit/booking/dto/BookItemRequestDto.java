@@ -6,12 +6,13 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookItemRequestDto {
 	private long itemId;
 	@FutureOrPresent

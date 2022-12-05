@@ -12,9 +12,9 @@ import ru.practicum.shareit.exceptions.CrudException;
 import ru.practicum.shareit.item.CommentsRepository;
 import ru.practicum.shareit.item.ItemsRepository;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.UsersRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -43,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
         List<Comment> comments = commentsRepository.findAllByItemId(itemId);
         List<CommentDto> commentDtos = new ArrayList<>(Collections.emptyList());
         if (!comments.isEmpty()) {
-            for (Comment comment: comments) {
+            for (Comment comment : comments) {
                 CommentDto commentDto1 = CommentMapper.toDto(comment);
                 commentDtos.add(commentDto1);
             }
@@ -53,10 +53,10 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoBookingNodes itemDtoBookingNodesLast;
         ItemDtoBookingNodes itemDtoBookingNodesNext;
         if (!bookingNext.isEmpty()) {
-            itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingNext.get(0).getId(),bookingNext.get(0).getBooker().getId());
+            itemDtoBookingNodesNext = new ItemDtoBookingNodes(bookingNext.get(0).getId(), bookingNext.get(0).getBooker().getId());
         } else itemDtoBookingNodesNext = null;
         if (!bookingLast.isEmpty()) {
-            itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(),bookingLast.get(0).getBooker().getId());
+            itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(), bookingLast.get(0).getBooker().getId());
         } else itemDtoBookingNodesLast = null;
         ItemDto itemDto = ItemMapper.toItemBookingDto(item, commentDtos, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
         log.info("Просмотр вещи  id = {} пользователем id = {}", itemDto, userId);
@@ -67,11 +67,10 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDtoShort> readAll(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CrudException("Пользователя не существует",
                 "id", String.valueOf(userId)));
-        List<Item> items = itemRepository.findAll().stream()
-                .filter(item -> item.getOwner().getId().equals(userId))
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId).stream()
                 .collect(Collectors.toList());
         List<ItemDtoShort> resultItems = new ArrayList<>(Collections.emptyList());
-        for (Item item: items) {
+        for (Item item : items) {
             List<Booking> bookingLast = bookingsRepository.findLastBooking(item.getId(), userId, BookingStatus.APPROVED, LocalDateTime.now());
             List<Booking> bookingNext = bookingsRepository.findNextBooking(item.getId(), userId, BookingStatus.APPROVED, LocalDateTime.now());
             ItemDtoBookingNodes itemDtoBookingNodesLast;
@@ -83,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
                 itemDtoBookingNodesLast = new ItemDtoBookingNodes(bookingLast.get(0).getId(), bookingLast.get(0).getBooker().getId());
             } else itemDtoBookingNodesLast = null;
 
-            ItemDtoShort itemDtoShort = ItemMapper.toItemDtoShort(item, itemDtoBookingNodesLast,itemDtoBookingNodesNext);
+            ItemDtoShort itemDtoShort = ItemMapper.toItemDtoShort(item, itemDtoBookingNodesLast, itemDtoBookingNodesNext);
             resultItems.add(itemDtoShort);
         }
         log.info("Просмотр вещей пользователем id = {}", userId);
