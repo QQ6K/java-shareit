@@ -1,2 +1,2 @@
 # java-shareit
-Template repository for Shareit project.
+A service for posting things, booking them, as well as creating enquiries for things not on the site. With the functionality of leaving reviews.
